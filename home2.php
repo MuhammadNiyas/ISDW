@@ -21,7 +21,12 @@ if (!$conn) {
 
 // Retrieve products uploaded by the seller
 $sellerID = $_SESSION['sellerID'];
-$query = "SELECT * FROM products WHERE sellerID = $sellerID";
+
+// Filter products by productCategories if a productCategories is selected
+$productCategories = isset($_GET['productCategories']) ? $_GET['productCategories'] : '';
+$productCategoriesQuery = $productCategories ? "AND productCategories = '$productCategories'" : '';
+
+$query = "SELECT * FROM products WHERE sellerID = $sellerID $productCategoriesQuery";
 $result = mysqli_query($conn, $query);
 
 if (!$result) {
@@ -34,14 +39,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $productName = mysqli_real_escape_string($conn, $_POST['productName']);
     $productDescription = mysqli_real_escape_string($conn, $_POST['productDescription']);
     $productPrice = mysqli_real_escape_string($conn, $_POST['productPrice']);
+    $productCategories = mysqli_real_escape_string($conn, $_POST['productCategories']);
 
     // Update product details in the database
-    $updateQuery = "UPDATE products SET productName = '$productName', productDescription = '$productDescription', productPrice = '$productPrice' WHERE productID = $productID";
+    $updateQuery = "UPDATE products SET productName = '$productName', productDescription = '$productDescription', productPrice = '$productPrice', productCategories = '$productCategories' WHERE productID = $productID";
     $updateResult = mysqli_query($conn, $updateQuery);
 
     if ($updateResult) {
         $success_message = "Product details updated successfully.";
-        echo '<script>window.location.href = window.location.href;</script>'; // Redirect to the same page after successful update
+        header("Location: ".$_SERVER['PHP_SELF']."?productCategories=".$productCategories);
         exit();
     } else {
         $error_message = "Failed to update product details. Please try again.";
@@ -58,32 +64,234 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
 
     if ($deleteResult) {
         $success_message = "Product deleted successfully.";
-        echo '<script>window.location.href = window.location.href;</script>'; // Redirect to the same page after successful deletion
+        header("Location: ".$_SERVER['PHP_SELF']."?productCategories=".$productCategories);
         exit();
     } else {
         $error_message = "Failed to delete product. Please try again.";
     }
 }
+
+// Upload product
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['upload'])) {
+    $productName = mysqli_real_escape_string($conn, $_POST['productName']);
+    $productDescription = mysqli_real_escape_string($conn, $_POST['productDescription']);
+    $productPrice = mysqli_real_escape_string($conn, $_POST['productPrice']);
+    $productCategories = mysqli_real_escape_string($conn, $_POST['productCategories']);
+
+    // Upload product image
+    $productImage = $_FILES['productImage']['tmp_name'];
+    $productImage = addslashes(file_get_contents($productImage));
+
+    // Insert product details into the database
+    $insertQuery = "INSERT INTO products (sellerID, productName, productDescription, productPrice, productCategories, productImage) VALUES ($sellerID, '$productName', '$productDescription', '$productPrice', '$productCategories', '$productImage')";
+    $insertResult = mysqli_query($conn, $insertQuery);
+
+    if ($insertResult) {
+        $success_message = "Product uploaded successfully.";
+        header("Location: ".$_SERVER['PHP_SELF']."?productCategories=".$productCategories);
+        exit();
+    } else {
+        $error_message = "Failed to upload product. Please try again.";
+    }
+}
+
+// Retrieve all productCategories from the database
+$productCategoriesQuery = "SELECT DISTINCT productCategories FROM products";
+$productCategoriesResult = mysqli_query($conn, $productCategoriesQuery);
+
+if (!$productCategoriesResult) {
+    die("Error: " . mysqli_error($conn));
+}
+
+$productCategories = mysqli_fetch_all($productCategoriesResult, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="style13.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style> 
+/* CSS code for home2.php */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Verdana, sans-serif;
+  margin: 0;
+}
+
+.mySlides {
+  display: none;
+}
+
+img {
+  vertical-align: middle;
+}
+
+body {
+  background-image: url("images17.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+/* Navigation bar styling */
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000000;
+  text-align: right;
+}
+
+nav li {
+  float: left;
+}
+
+nav li a {
+  display: block;
+  color: #fff;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav li a:hover {
+  background-color: #6b5a5a;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+table td img {
+  max-width: 150px;
+  max-height: 150px;
+}
+
+/* Form input styling */
+form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form div {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form label {
+  width: 150px;
+  margin-right: 5px;
+}
+
+form select,
+form button {
+  margin-right: 5px;
+}
+
+form select {
+  width: 200px;
+}
+
+form button {
+  padding: 5px 10px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #111;
+}
+
+/* Error and success message styling */
+.error,
+.success {
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.error {
+  background-color: #ffcccc;
+  color: #ff0000;
+}
+
+.success {
+  background-color: #ccffcc;
+  color: #00cc00;
+}
+
+
+</style>
 </head>
 <body>
 
 <nav>
     <ul>
-        <li class="logo"><a href="home1.php"><img src="logo.png" alt="Logo" width="125px"></a></li>
+        <li class="logo"><a href="home2.php"><img src="logo2.png" alt="Logo" width="125px"></a></li>
         <li><a href="home2.php">Home</a></li>
         <li><a href="product2.php">Products</a></li>
         <li><a href="userprofile2.php">Seller Profile</a></li>
+        <li><a href="order_status2.php"> Orders </a></li>
         <li style="float:right"><a href="logout2.php">Logout</a></li>
+       
     </ul>
 </nav>
+
+
+
+<form method="get" action="">
+    <div class="form-group">
+        <label for="productCategories" class="label-inline">Filter by Product Categories:</label>
+        <select id="productCategories" name="productCategories" class="select-inline">
+            <option value="">All Products</option>
+            <?php foreach ($productCategories as $productCategory): ?>
+                <option value="<?php echo $productCategory['productCategories']; ?>" <?php echo $productCategory['productCategories'] === $productCategories ? 'selected' : ''; ?>>
+                    <?php echo $productCategory['productCategories']; ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit">Filter</button>
+    </div>
+</form>
+
 
 <table>
     <tr>
@@ -92,6 +300,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
         <th>Product Description</th>
         <th>Product Price</th>
         <th>Product Image</th>
+        <th>Action</th>
     </tr>
 
     <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -116,9 +325,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
                         <label for="productPrice">Product Price:</label>
                         <input type="text" id="productPrice" name="productPrice" value="<?php echo $row['productPrice']; ?>" required>
                     </div>
+    <div> 
+    <label for="productImage">Product Image:</label>
+    <input type="file" id="productImage" name="productImage" accept="image/*">
+    </div>
+
                     <div>
-                        <label for="productImage">Product Image:</label>
-                        <input type="file" id="productImage" name="productImage" accept="image/*">
+                        <label for="productCategories">Product Categories:</label>
+                        <select id="productCategories" name="productCategories" required>
+                            <option value="">Select a Category</option>
+                            <?php foreach ($productCategories as $productCategory): ?>
+                                <option value="<?php echo $productCategory['productCategories']; ?>" <?php echo $productCategory['productCategories'] === $row['productCategories'] ? 'selected' : ''; ?>>
+                                    <?php echo $productCategory['productCategories']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div>
                         <button type="submit" name="update">Update Product</button>
@@ -129,13 +350,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
         </tr>
     <?php endwhile; ?>
 </table>
-
-<?php if (isset($error_message)): ?>
-    <div class="error"><?php echo $error_message; ?></div>
-<?php endif; ?>
-<?php if (isset($success_message)): ?>
-    <div class="success"><?php echo $success_message; ?></div>
-<?php endif; ?>
 
 </body>
 </html>
