@@ -34,70 +34,127 @@ $row = mysqli_fetch_assoc($result);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $buyerName = mysqli_real_escape_string($conn, $_POST['buyerName']);
     $buyerPhoneNumber = mysqli_real_escape_string($conn, $_POST['buyerPhoneNumber']);
-    $buyerAddress = mysqli_real_escape_string($conn, $_POST['buyerAddress']);
     $buyerEmail = mysqli_real_escape_string($conn, $_POST['buyerEmail']);
+    $buyerAddress = mysqli_real_escape_string($conn, $_POST['buyerAddress']);
 
-    $updateQuery = "UPDATE Buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerAddress = '$buyerAddress', buyerEmail = '$buyerEmail' WHERE buyerID = $buyerID";
-    $updateResult = mysqli_query($conn, $updateQuery);
+    // Handle profile picture upload
+    if ($_FILES['profilePicture']['name']) {
+        $file_name = $_FILES['profilePicture']['name'];
+        $file_tmp = $_FILES['profilePicture']['tmp_name'];
+        $file_type = $_FILES['profilePicture']['type'];
+        $file_size = $_FILES['profilePicture']['size'];
+        $file_error = $_FILES['profilePicture']['error'];
 
-    if ($updateResult) {
-        $_SESSION['success_message'] = "Profile updated successfully.";
-        header("Location: home1.php");
-        exit();
+        // Check if uploaded file is an image
+        $allowed_extensions = array("jpg", "jpeg", "png");
+        $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        if (!in_array($file_extension, $allowed_extensions)) {
+            $error_message = "Invalid file type. Only JPG, JPEG, and PNG images are allowed.";
+        } elseif ($file_error !== 0) {
+            $error_message = "Error uploading file. Please try again.";
+        } else {
+            // Generate a unique filename and move the uploaded file to the destination directory
+            $new_filename = uniqid() . '.' . $file_extension;
+            $destination = "profile_pictures/" . $new_filename;
+            if (move_uploaded_file($file_tmp, $destination)) {
+                // Delete the previous profile picture if it exists
+                if (!empty($row['profilePicture'])) {
+                    unlink("profile_pictures/" . $row['profilePicture']);
+                }
+
+                // Update the database with the new profile picture filename
+                $updateQuery = "UPDATE buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress', profilePicture = '$new_filename' WHERE buyerID = $buyerID";
+                $updateResult = mysqli_query($conn, $updateQuery);
+
+                if ($updateResult) {
+                    $_SESSION['success_message'] = "Profile updated successfully.";
+                    echo "<script>alert('Profile updated successfully.');</script>";
+                    header("Location: home1.php");
+                    exit();
+                } else {
+                    $error_message = "Profile update failed. Please try again.";
+                }
+            } else {
+                $error_message = "Error moving uploaded file. Please try again.";
+            }
+        }
     } else {
-        $error_message = "Profile update failed. Please try again.";
+        // Update user details without changing the profile picture
+        $updateQuery = "UPDATE buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress' WHERE buyerID = $buyerID";
+        $updateResult = mysqli_query($conn, $updateQuery);
+
+        if ($updateResult) {
+            $_SESSION['success_message'] = "Profile updated successfully.";
+            echo "<script>alert('Profile updated successfully.');</script>";
+            header("Location: home1.php");
+            exit();
+        } else {
+            $error_message = "Profile update failed. Please try again.";
+        }
     }
 }
 
 mysqli_close($conn);
 ?>
 
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Profile</title>
-    <link rel="stylesheet" type="text/css" href="style4.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--icon-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    
-    <script src="script1.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="style1.css">
+    <title>User Profile</title>
 </head>
 <body>
-<nav>
-    <ul>
-    <li class="logo"><a href="home1.php"><img src="logo.png" alt="Logo" width="125px"></a></li>
-        <li><a href="home1.php"> Home</a></li>
-       <li><a href="userprofile1.php"> User Profile</a></li> 
-        <li><a href="cart1.php"> Cart</a></li>
- <li style="float:right"><a href="logout1.php">Logout</a></li>
-      
-    </ul>
-</nav>
+    <div class="topnav">
+        <img src="logo2.png" alt="Logo" width="150px">
+        <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> LOGOUT</a>
+        <a href="userprofile1.php" class="active"><i class="fas fa-user"></i> USER PROFILE</a>
+        <a href="cart1.php"><i class="fas fa-shopping-cart"></i> CART</a>
+        <a href="home1.php"><i class="fas fa-home"></i> HOME</a>
+    </div>
 
     <div class="container">
-        <h1>User Profile</h1>
-        <?php if(isset($error_message)): ?>
-            <div class="error"><?php echo $error_message; ?></div>
-        <?php endif; ?>
-        <form method="post">
-            <div>
-                <label for="buyerName">Name:</label>
-                <input type="text" id="buyerName" name="buyerName" value="<?php echo $row['buyerName']; ?>" required>
-            </div>
-            <div>
-                <label for="buyerEmail">Email:</label>
-                <input type="email" id="buyerEmail" name="buyerEmail" value="<?php echo $row['buyerEmail']; ?>" required>
-            </div>
-            <div>
-                <label for="buyerPhoneNumber">Phone Number:</label>
-                <input type="text" id="buyerPhoneNumber" name="buyerPhoneNumber" value="<?php echo $row['buyerPhoneNumber']; ?>" required>
-            </div>
-            <div>
-                <label for="buyerAddress">Address:</label>
-                <textarea id="buyerAddress" name="buyerAddress" required><?php echo $row['buyerAddress']; ?></textarea>
-            </div>
-            <button type="submit">Update Profile</button>
-        </form>
+    <h1>buyer Profile</h1>
+    <?php if(isset($error_message)): ?>
+        <div class="error"><?php echo $error_message; ?></div>
+    <?php endif; ?>
+    <?php if(isset($_SESSION['success_message'])): ?>
+        <div class="success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+    <?php endif; ?>
+    <div style="text-align: center;">
+        <img src="profile_pictures/<?php echo $row['profilePicture']; ?>" class="profile-pic" alt="Profile Picture">
     </div>
-   
+    <form method="post" enctype="multipart/form-data">
+        <div>
+            <label for="buyerName">Name:</label>
+            <input type="text" id="buyerName" name="buyerName" value="<?php echo $row['buyerName']; ?>" required>
+        </div>
+        <div>
+            <label for="buyerEmail">Email:</label>
+            <input type="email" id="buyerEmail" name="buyerEmail" value="<?php echo $row['buyerEmail']; ?>" required>
+        </div>
+        <div>
+            <label for="buyerPhoneNumber">Phone Number:</label>
+            <input type="text" id="buyerPhoneNumber" name="buyerPhoneNumber" value="<?php echo $row['buyerPhoneNumber']; ?>" required>
+        </div>
+        <div>
+            <label for="buyerAddress">Address:</label>
+            <input type="text" id="buyerAddress" name="buyerAddress" value="<?php echo $row['buyerAddress']; ?>" required>
+        </div>
+       
+        <div>
+            <label for="profilePicture">Profile Picture:</label>
+            <input type="file" id="profilePicture" name="profilePicture">
+        </div>
+        <button type="submit">Update Profile</button>
+    </form>
+    <p><a href="changepassword2.php">Change Password</a></p>
+    </div>
+    
 </body>
 </html>
