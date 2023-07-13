@@ -7,12 +7,14 @@ if (!isset($_SESSION['buyerID'])) {
     exit();
 }
 
-// Check if the cart is empty
-if (empty($_SESSION['cart'])) {
-    header("Location: cart1.php");
-    exit();
+// Retrieve buyer details from session or database
+$buyerID = $_SESSION['buyerID'];
+
+if (isset($_SESSION['buyerDetails'])) {
+    $buyerDetails = $_SESSION['buyerDetails'];
 }
 
+// Connect to the database
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
@@ -24,68 +26,37 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Retrieve user details from the database
-$buyerID = $_SESSION['buyerID'];
-$query = "SELECT * FROM buyers WHERE buyerID = $buyerID";
+$reservedItems = array();
+$query = "SELECT * FROM reservations WHERE buyerID = {$_SESSION['buyerID']}";
 $result = mysqli_query($conn, $query);
 
 if (!$result) {
     die("Error: " . mysqli_error($conn));
 }
 
-$row = mysqli_fetch_assoc($result);
-
-// Update buyer details in the session
-$_SESSION['buyerName'] = $row['buyerName'];
-$_SESSION['buyerPhoneNumber'] = $row['buyerPhoneNumber'];
-$_SESSION['buyerEmail'] = $row['buyerEmail'];
-$_SESSION['buyerAddress'] = $row['buyerAddress'];
-
-$productIDs = array_keys($_SESSION['cart']);
-$productIDsString = implode(",", $productIDs);
-
-$query = "SELECT * FROM products WHERE productID IN ($productIDsString)";
-$result = mysqli_query($conn, $query);
-
-if (!$result) {
-    die("Error: " . mysqli_error($conn));
-}
-
-
-
-
-
-
-
-
-// Fetch checkout and buyer details from the database
-$query = "SELECT c.productID, c.productPrice, c.productName, b.buyerName, b.buyerAddress, b.buyerEmail, b.buyerPhoneNumber
-          FROM checkout c
-          JOIN buyers b ON c.buyerID = b.buyerID
-          WHERE c.buyerID = $buyerID";
-$result = mysqli_query($conn, $query);
-
-if (!$result) {
-    die("Error: " . mysqli_error($conn));
-}
-
-$checkoutItems = array();
 while ($row = mysqli_fetch_assoc($result)) {
-    $checkoutItems[] = array(
-        'productID' => $row['productID'],
-        'productPrice' => $row['productPrice'],
-        'productName' => $row['productName'],
-        'buyerName' => $row['buyerName'],
-        'buyerAddress' => $row['buyerAddress'],
-        'buyerEmail' => $row['buyerEmail'],
-        'buyerPhoneNumber' => $row['buyerPhoneNumber'],
-    );
+    $productID = $row['productID'];
+
+    // Check if the product is already in the checkout table
+    $checkQuery = "SELECT COUNT(*) AS count FROM checkout WHERE productID = '$productID'";
+    $checkResult = mysqli_query($conn, $checkQuery);
+
+    if (!$checkResult) {
+        die("Error checking product existence in checkout table: " . mysqli_error($conn));
+    }
+
+    $productExists = mysqli_fetch_assoc($checkResult)['count'];
+
+    if ($productExists == 0) {
+        $reservedItems[] = array(
+            'reserveID' => $row['reserveID'],
+            'productID' => $row['productID'],
+            'productName' => $row['productName'],
+            'productPrice' => $row['productPrice']
+        );
+    }
 }
 
-
-
-
-// Retrieve products from the cart
 $cartItems = array();
 $totalCost = 0;
 
@@ -103,385 +74,424 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
         $productID = $row['productID'];
         $productName = $row['productName'];
         $productPrice = $row['productPrice'];
-        $productDescription = $row['productDescription'];
-        $quantity = $_SESSION['cart'][$productID];
-        $subtotal = $productPrice * $quantity;
-        $productImage = $row['productImage'];
 
         $cartItems[] = array(
             'productID' => $productID,
             'productName' => $productName,
             'productPrice' => $productPrice,
-            'productDescription' => $productDescription,
-            'productImage' => $productImage,
-            'quantity' => $quantity,
-            'subtotal' => $subtotal
         );
-
-        $totalCost += $subtotal;
-        $totalCost += 0; // Delivery charge is free, so add 0
-
     }
 }
 
+if (isset($_POST['checkout'])) {
 
-// Update buyer details if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $buyerName = isset($_SESSION['buyerName']) ? $_SESSION['buyerName'] : 'Default value';
-  $buyerPhoneNumber = isset($_SESSION['buyerPhoneNumber']) ? $_SESSION['buyerPhoneNumber'] : 'Default value';
-  $buyerEmail = isset($_SESSION['buyerEmail']) ? $_SESSION['buyerEmail'] : 'Default value';
-  $buyerAddress = isset($_SESSION['buyerAddress']) ? $_SESSION['buyerAddress'] : 'Default value';
+    // Insert the reserved items into the checkout table
+    foreach ($reservedItems as $item) {
+        $reserveID = $item['reserveID'];
+        $productID = $item['productID'];
+        $productName = $item['productName'];
+        $productPrice = $item['productPrice'];
 
-  // Update buyer details in the session
-  $_SESSION['buyerName'] = $buyerName;
-  $_SESSION['buyerPhoneNumber'] = $buyerPhoneNumber;
-  $_SESSION['buyerEmail'] = $buyerEmail;
-  $_SESSION['buyerAddress'] = $buyerAddress;
+        $insertQuery = "INSERT INTO checkout (reserveID, productID, productName, productPrice, buyerID, buyerUsername, buyerName, buyerEmail, buyerAddress, buyerPhoneNumber) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $insertQuery);
+        mysqli_stmt_bind_param($stmt, "ssssssssss", $reserveID, $productID, $productName, $productPrice, $buyerID, $buyerDetails['buyerUsername'], $buyerDetails['buyerName'], $buyerDetails['buyerEmail'], $buyerDetails['buyerAddress'], $buyerDetails['buyerPhoneNumber']);
+        $insertResult = mysqli_stmt_execute($stmt);
 
-  // Update buyer details in the database
-  $query = "UPDATE checkout SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress' WHERE buyerID = $buyerID";
-  $result = mysqli_query($conn, $query);
+        if (!$insertResult) {
+            die("Error inserting reserved items into checkout table: " . mysqli_error($conn));
+        }
+    }
 
-  if (!$result) {
-      die("Error: " . mysqli_error($conn));
-  }
+    // Insert the cart items into the checkout table
+    foreach ($cartItems as $item) {
+        $productID = $item['productID'];
+        $productName = $item['productName'];
+        $productPrice = $item['productPrice'];
 
-  // Update or insert checkout details in the database
-  if (empty($checkoutItems)) {
-      $query = "INSERT INTO checkout (buyerID, buyerName, buyerPhoneNumber, buyerEmail, buyerAddress, productID, productPrice, productName) VALUES ($buyerID, '$buyerName', '$buyerPhoneNumber', '$buyerEmail', '$buyerAddress', '$productID', '$productPrice', '$productName')";
-      $result = mysqli_query($conn, $query);
+        $insertQuery = "INSERT INTO checkout (productID, productName, productPrice, buyerID, buyerUsername, buyerName, buyerEmail, buyerAddress, buyerPhoneNumber) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $insertQuery);
+        mysqli_stmt_bind_param($stmt, "sssssssss", $productID, $productName, $productPrice, $buyerID, $buyerDetails['buyerUsername'], $buyerDetails['buyerName'], $buyerDetails['buyerEmail'], $buyerDetails['buyerAddress'], $buyerDetails['buyerPhoneNumber']);
+        $insertResult = mysqli_stmt_execute($stmt);
 
-      if (!$result) {
-          die("Error: " . mysqli_error($conn));
-      }
-  } else {
-      $query = "UPDATE checkout SET productID = '$productID', productPrice = '$productPrice', productName = '$productName' WHERE buyerID = $buyerID";
-      $result = mysqli_query($conn, $query);
-
-      if (!$result) {
-          die("Error: " . mysqli_error($conn));
-      }
-  }
-
- 
+        if (!$insertResult) {
+            die("Error inserting cart items into checkout table: " . mysqli_error($conn));
+        }
+    }
 }
+
+// Retrieve buyer details from the database
+$query = "SELECT * FROM Buyers WHERE buyerID = $buyerID";
+$result = mysqli_query($conn, $query);
+
+if (!$result) {
+    die("Error: " . mysqli_error($conn));
+}
+
+$buyerDetails = mysqli_fetch_assoc($result);
+
+// Store buyer details in session for future use
+$_SESSION['buyerDetails'] = $buyerDetails;
+
 mysqli_close($conn);
-
-
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--icon-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="style30.css">
     <title>CHECKOUT</title>
-<style>
-body {
-    margin: 0;
-    font-family:  sans-serif;
-}
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+        }
 
-* {
-  box-sizing: border-box;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-.topnav {
-    overflow: hidden;
-    background-color: #000;
-  }
-  
-  .topnav a {
-    float: right;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 15px;
-    text-transform: uppercase
-  }
-  
-  .topnav a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-  
-  .topnav a.active {
-    background-color: #536bdd;
-    color: white;
-  }
+        .topnav {
+            overflow: hidden;
+            background-color: #000;
+        }
 
-/*icon*/
-  .topnav a i {
-    margin-right: 5px;
-  font-size: 20px; /* Adjust the font size as desired */
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
-  }
+        .topnav a {
+            float: right;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
 
-  /*checkout heading*/
- .checkout-heading {
-  text-align: center;
-}
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
 
-.checkout-heading i {
-  margin-right: 10px;
-}
+        .topnav a.active {
+            background-color: #536bdd;
+            color: white;
+        }
 
+        .icon {
+            margin-right: 5px;
+            font-size: 20px;
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+        }
 
-/*prodcut details */
+        .checkout-heading {
+            text-align: center;
+        }
 
-.order-summary {
-  margin-top: 20px;
-}
+        .checkout-heading i {
+            margin-right: 10px;
+        }
 
-.order-summary h2 {
-  margin-bottom: 10px;
-  text-align: left;
-  font-size: 18px;
-}
+        .order-summary {
+            margin-top: 20px;
+        }
 
-.summary-box {
-  margin-top: 10px;
-}
+        .order-summary h2 {
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 18px;
+        }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+        .summary-box {
+            margin-top: 10px;
+        }
 
-table th,
-table td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-table th {
-  background-color: #f2f2f2;
-}
+        table th,
+        table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-.total {
-  font-weight: bold;
-}
+        table th {
+            background-color: #f2f2f2;
+        }
 
+        .total {
+            font-weight: bold;
+        }
 
-.row {
-  display: -ms-flexbox; /* IE10 */
-  display: flex;
-  -ms-flex-wrap: wrap; /* IE10 */
-  flex-wrap: wrap;
-  margin: 0 -16px;
-}
+        .col-25 {
+            -ms-flex: 25%;
+            /* IE10 */
+            flex: 25%;
+        }
 
-.col-25 {
-  -ms-flex: 25%; /* IE10 */
-  flex: 25%;
-}
+        .col-25,
+        .col-50,
+        .col-75 {
+            padding: 0 16px;
+        }
 
-.col-50 {
-  -ms-flex: 50%; /* IE10 */
-  flex: 50%;
-}
+        .container {
+            background-color: #f2f2f2;
+            padding: 5px 20px 15px 20px;
+            border: 1px solid lightgrey;
+            border-radius: 3px;
+            flex: 10%;
+        }
 
-.col-75 {
-  -ms-flex: 75%; /* IE10 */
-  flex: 75%;
-}
+        .icon-container {
+            margin-bottom: 20px;
+            padding: 7px 0;
+            font-size: 24px;
+        }
 
-.col-25,
-.col-50,
-.col-75 {
-  padding: 0 16px;
-}
+        .payment-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
 
-.container {
-  background-color: #f2f2f2;
-  padding: 5px 20px 15px 20px;
-  border: 1px solid lightgrey;
-  border-radius: 3px;
-}
+        .payment-container .col-50 {
+            flex: 50%;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            margin-bottom: 20px;
+        }
 
-input[type=text] {
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
+        .payment-container h3 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-label {
-  margin-bottom: 10px;
-  display: block;
-}
+        .payment-container label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
 
-.icon-container {
-  margin-bottom: 20px;
-  padding: 7px 0;
-  font-size: 24px;
-}
+        .payment-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
 
-.btn {
-  background-color: #536bdd;
-  color: white;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  width: 100%;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 17px;
-}
+        .payment-container .row::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
 
-.btn:hover {
-  background-color: grey;
-}
+        .payment-container .col-50 .btn {
+            background-color: #536bdd;
+            color: white;
+            padding: 14px 20px;
+            margin-top: 20px;
+            border: none;
+            width: 100%;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 17px;
+            transition: background-color 0.3s ease;
+        }
 
-a {
-  color: #2196F3;
-}
+        .payment-container .col-50 .btn:hover {
+            background-color: #4054b2;
+        }
 
-hr {
-  border: 1px solid lightgrey;
-}
-
-span.price {
-  float: right;
-  color: grey;
-}
-
-/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (also change the direction - make the "cart" column go on top) */
-@media (max-width: 800px) {
-  .row {
-    flex-direction: column-reverse;
-  }
-  .col-25 {
-    margin-bottom: 20px;
-  }
-}
-</style>
+        .row {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <body>
-
-<div class="topnav">
+    <!-- Header and navigation code here -->
+    <div class="topnav">
         <img src="logo2.png" alt="Logo" width="150px">
-        <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> LOGOUT</a>
-        <a href="userprofile1.php"><i class="fas fa-user"></i> USER PROFILE</a> 
+        <a href="view_transaction.php"><i class="	fas fa-money-check-alt"></i></a>
+    <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> </a>
+        <a href="process_form.php"><i class="fas fa-paper-plane"></i> CONTACT US</a>
+        <a href="userprofile1.php"><i class="fas fa-user"></i> USER PROFILE</a>
+        <a href="reserve.php" ><i class="far fa-calendar-alt"></i> RESERVE</a>
         <a href="cart1.php"><i class="fas fa-shopping-cart"></i> CART</a>
-        <a href="home1.php" ><i class="fas fa-home"></i> HOME</a> 
+        <a href="home1.php" ><i class="fas fa-home"></i> HOME</a>
     </div>
 
-    <h1 class="checkout-heading"><i class="fas fa-shopping-cart"></i> Checkout</h1>
-<div class="row">
-  <div class="col-75">
-    <div class="container">
-    <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-      
-        <div class="row">
-          <div class="col-50">
-            <h3>Details</h3>
-            <div>
-            <label for="buyerName">Name:</label>
-<input type="text" id="buyerName" name="buyerName" value="<?php echo htmlspecialchars($checkoutItems[0]['buyerName'] ?? $_SESSION['buyerName'] ?? ''); ?>" required><br><br>
+    <div class="col-25">
+        <div class="container">
+            <!-- Order summary and checkout button -->
+            <?php if (!empty($reservedItems) && empty($cartItems)): ?>
+                <div class="order-summary">
+                <h3 style="text-align:center">Reserved Items</h3>
+                    <table>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Product Price</th>
+                            <th>Buyer Name</th>
+                            <th>Buyer Email</th>
+                            <th>Buyer Address</th>
+                            <th>Buyer Phone Number</th>
+                        </tr>
+                        <?php foreach ($reservedItems as $item): ?>
+                            <tr>
+                                <td><?php echo $item['productID']; ?></td>
+                                <td><?php echo $item['productName']; ?></td>
+                                <td><?php echo $item['productPrice']; ?></td>
+                                <td><?php echo $buyerDetails['buyerName']; ?></td>
+                                <td><?php echo $buyerDetails['buyerEmail']; ?></td>
+                                <td><?php echo $buyerDetails['buyerAddress']; ?></td>
+                                <td><?php echo $buyerDetails['buyerPhoneNumber']; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                    <?php $reservedTotalCost = 0; ?>
+                    <?php foreach ($reservedItems as $item): ?>
+                        <?php $reservedTotalCost += $item['productPrice']; ?>
+                    <?php endforeach; ?>
+                    <h3>Total Cost: $<?php echo $reservedTotalCost; ?></h3>
+                </div>
+            <?php elseif (empty($reservedItems) && !empty($cartItems)): ?>
+                <div class="order-summary">
+                <h3 style="text-align:center">Cart Items</h3>
+                    <table>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Product Price</th>
+                            <th>Buyer Name</th>
+                            <th>Buyer Email</th>
+                            <th>Buyer Address</th>
+                            <th>Buyer Phone Number</th>
+                        </tr>
+                        <?php foreach ($cartItems as $item): ?>
+                            <tr>
+                                <td><?php echo $item['productID']; ?></td>
+                                <td><?php echo $item['productName']; ?></td>
+                                <td><?php echo $item['productPrice']; ?></td>
+                                <td><?php echo $buyerDetails['buyerName']; ?></td>
+                                <td><?php echo $buyerDetails['buyerEmail']; ?></td>
+                                <td><?php echo $buyerDetails['buyerAddress']; ?></td>
+                                <td><?php echo $buyerDetails['buyerPhoneNumber']; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                    <?php
+                    $totalCost = 0;
 
-<label for="buyerPhoneNumber">Phone Number:</label>
-<input type="text" id="buyerPhoneNumber" name="buyerPhoneNumber" value="<?php echo htmlspecialchars($checkoutItems[0]['buyerPhoneNumber'] ?? $_SESSION['buyerPhoneNumber'] ?? ''); ?>" required><br><br>
+                    // Calculate the total cost of reserved items
+                    foreach ($reservedItems as $item) {
+                        $totalCost += $item['productPrice'];
+                    }
 
-<label for="buyerEmail">Email:</label>
-<input type="text" id="buyerEmail" name="buyerEmail" value="<?php echo htmlspecialchars($checkoutItems[0]['buyerEmail'] ?? $_SESSION['buyerEmail'] ?? ''); ?>" required><br><br>
+                    // Calculate the total cost of cart items
+                    foreach ($cartItems as $item) {
+                        $totalCost += $item['productPrice'];
+                    }
+                    ?>
 
-<label for="buyerAddress">Address:</label>
-<input type="text" id="buyerAddress" name="buyerAddress" value="<?php echo htmlspecialchars($checkoutItems[0]['buyerAddress'] ?? $_SESSION['buyerAddress'] ?? ''); ?>" required><br><br>
-
-        <input type="submit" name="update_profile" value="Update Profile">
-        </form>
-
-      
-</div>
-</div>
-
-          <div class="col-50">
-            <h3>Payment</h3>
-            <label for="fname">Accepted Cards</label>
-            <div class="icon-container">
-              <i class="fa fa-cc-visa" style="color:navy;"></i>
-             <i class="fa fa-cc-mastercard" style="color:red;"></i>
-             
+                    <h3>Total Cost: $<?php echo $totalCost; ?></h3>
+                </div>
+            <?php elseif (!empty($reservedItems) && !empty($cartItems)): ?>
+                <div class="order-summary">
+                    <p>Error: Cannot proceed with checkout. Please remove either the reserved items or the items in the cart.</p>
+                </div>
+            <?php endif; ?>
+            <div class="payment-container">
+                <div class="col-50">
+                    <h3>Payment</h3>
+                    <form method="post" action="" onsubmit="return validatePaymentForm()">
+                        <div class="row">
+                            <div class="col-50">
+                                <label for="cname">Name on Card</label>
+                                <input type="text" id="cname" name="cardname" placeholder="Enter name on card">
+                            </div>
+                            <div class="col-50">
+                                <label for="ccnum">Credit card number</label>
+                                <input type="text" id="ccnum" name="cardnumber" placeholder="Enter your credit card number">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-50">
+                                <label for="expmonth">Exp Month</label>
+                                <input type="text" id="expmonth" name="expmonth" placeholder="Month">
+                            </div>
+                            <div class="col-50">
+                                <label for="expyear">Exp Year</label>
+                                <input type="text" id="expyear" name="expyear" placeholder="Year">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-50">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="CVV">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-50">
+                                <button type="submit" name="checkout" class="btn">Proceed to Checkout</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <label for="cname">Name on Card</label>
-            <input type="text" id="cname" name="cardname" placeholder="">
-            <label for="ccnum">Credit card number</label>
-            <input type="text" id="ccnum" name="cardnumber" placeholder="">
-            <label for="expmonth">Exp Month</label>
-            <input type="text" id="expmonth" name="expmonth" placeholder="">
-            <div class="row">
-              <div class="col-50">
-                <label for="expyear">Exp Year</label>
-                <input type="text" id="expyear" name="expyear" placeholder="">
-              </div>
-              <div class="col-50">
-                <label for="cvv">CVV</label>
-                <input type="text" id="cvv" name="cvv" placeholder="">
-              </div>
-            </div>
-          </div>
-          
         </div>
-        
-       
-      </form>
     </div>
-  </div>
-  <div class="col-25">
-    <div class="container">
-    <div class="order-summary">
-    <h2>Product</h2>
-    <div class="summary-box">
-        <table>
-            <tr>
-                <th> ID</th>
-                <th>Product</th>
-                <th>Price</th>
-            </tr>
 
+    <script>
+        function validatePaymentForm() {
+            var cardname = document.getElementById("cname").value;
+            var cardnumber = document.getElementById("ccnum").value;
+            var expmonth = document.getElementById("expmonth").value;
+            var expyear = document.getElementById("expyear").value;
+            var cvv = document.getElementById("cvv").value;
 
-            <?php foreach ($cartItems as $item): ?>
-                <tr>
-                    <td><?php echo $item['productID']; ?></td>
-                    <td><strong><?php echo $item['productName']; ?></strong></td>
-                    <td>$<?php echo $item['productPrice']; ?></td>
-                </tr>
-            <?php endforeach; ?>
+            if (cardname.trim() === "") {
+                alert("Please enter the name on the card.");
+                return false;
+            }
 
-         
+            if (cardnumber.trim() === "") {
+                alert("Please enter the credit card number.");
+                return false;
+            }
 
-           
+            if (expmonth.trim() === "") {
+                alert("Please enter the expiration month.");
+                return false;
+            }
 
+            if (expyear.trim() === "") {
+                alert("Please enter the expiration year.");
+                return false;
+            }
 
-            <tr>
-                <td colspan="3" class="total">Delivery Charge: Free</td>
-            </tr>
-            <tr>
-                <td colspan="3" class="total">Total Cost: $<?php echo $totalCost; ?></td>
-            </tr>
-        </table>
-        <form method="post" action="checkoutmessage1.php">
-  <button type="submit">Proceed to Checkout</button>
-</form>
+            if (cvv.trim() === "") {
+                alert("Please enter the CVV number.");
+                return false;
+            }
 
-</div>
+            // Additional validation logic can be added here as needed
 
-
-    </div>
-  </div>
-</div>
-
+            return true;
+        }
+    </script>
 </body>
 </html>
-
