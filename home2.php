@@ -7,6 +7,10 @@ if (!isset($_SESSION['sellerID'])) {
     exit();
 }
 
+// After validating the login credentials and confirming a successful login
+// Set the sellerName value in the session
+$sellerID = $_SESSION['sellerID'];
+
 // Connect to the database
 $db_host = "localhost";
 $db_user = "root";
@@ -19,8 +23,16 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Retrieve products uploaded by the seller
-$sellerID = $_SESSION['sellerID'];
+$query = "SELECT sellerName FROM sellers WHERE sellerID = $sellerID";
+$result = mysqli_query($conn, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $_SESSION['sellerName'] = $row['sellerName'];
+} else {
+    // Handle the case where the sellerName is not found
+    // You can redirect the user to an error page or display an appropriate message
+}
 
 // Filter products by productCategories if a productCategories is selected
 $productCategories = isset($_GET['productCategories']) ? $_GET['productCategories'] : '';
@@ -111,245 +123,271 @@ $productCategories = mysqli_fetch_all($productCategoriesResult, MYSQLI_ASSOC);
 <head>
     <title>Home</title>
     <style> 
-/* CSS code for home2.php */
+        /* CSS code for home2.php */
 
-* {
-  box-sizing: border-box;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .mySlides {
+            display: none;
+        }
+
+        img {
+            vertical-align: middle;
+        }
+
+        body {
+            background-image: url("images17.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Navigation bar styling */
+        nav {
+  display: flex;
+  justify-content: space-between;
+  background-color: #000000;
 }
 
-body {
-  font-family: Verdana, sans-serif;
-  margin: 0;
-}
-
-.mySlides {
-  display: none;
-}
-
-img {
-  vertical-align: middle;
-}
-
-body {
-  background-image: url("images17.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  box-sizing: border-box;
-}
-
-h1 {
-  margin-bottom: 20px;
-}
-
-/* Navigation bar styling */
 nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  background-color: #000000;
-  text-align: right;
+  display: flex;
+  align-items: center;
 }
 
-nav li {
-  float: left;
+nav ul li {
+  margin-left: 10px;
 }
 
-nav li a {
-  display: block;
+nav ul li a {
   color: #fff;
-  text-align: center;
-  padding: 14px 16px;
   text-decoration: none;
+  padding: 14px 16px;
 }
 
-nav li a:hover {
+nav ul li a:hover {
   background-color: #6b5a5a;
 }
 
-/* Table styling */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-table th,
-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-}
-
-table th {
-  background-color: #f2f2f2;
-  color: #333;
-}
-
-table td img {
-  max-width: 150px;
-  max-height: 150px;
-}
-
-/* Form input styling */
-form {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-form div {
-  margin-top: 10px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-form label {
-  width: 150px;
-  margin-right: 5px;
-}
-
-form select,
-form button {
-  margin-right: 5px;
-}
-
-form select {
-  width: 200px;
-}
-
-form button {
-  padding: 5px 10px;
-  background-color: #333;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-form button:hover {
-  background-color: #111;
-}
-
-/* Error and success message styling */
-.error,
-.success {
-  margin-top: 10px;
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.error {
-  background-color: #ffcccc;
-  color: #ff0000;
-}
-
-.success {
-  background-color: #ccffcc;
-  color: #00cc00;
+nav .logout {
+  margin-right: 10px;
 }
 
 
-</style>
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        table td img {
+            max-width: 150px;
+            max-height: 150px;
+        }
+
+        /* Form input styling */
+        form {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form div {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form label {
+            width: 150px;
+            margin-right: 5px;
+        }
+
+        form select,
+        form button {
+            margin-right: 5px;
+        }
+
+        form select {
+            width: 200px;
+        }
+
+        form button {
+            padding: 5px 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #111;
+        }
+
+        /* Error and success message styling */
+        .error,
+        .success {
+            margin-top: 10px;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .error {
+            background-color: #ffcccc;
+            color: #ff0000;
+        }
+
+        .success {
+            background-color: #ccffcc;
+            color: #00cc00;
+        }
+
+        #welcomeMessage {
+        /* Remove or update the display property to make the welcome message visible */
+    }
+
+    </style>
+
+<script>
+        // JavaScript code to hide the welcome message after 5 seconds
+        document.addEventListener("DOMContentLoaded", function() {
+            var welcomeMessage = document.getElementById("welcomeMessage");
+            setTimeout(function() {
+                welcomeMessage.style.display = "none";
+            }, 5000); // Hide the welcome message after 5 seconds (5000 milliseconds)
+        });
+    </script>
+
+
 </head>
 <body>
+    <nav>
+        <ul>
+            <li class="logo"><a href="home2.php"><img src="logo2.png" alt="Logo" width="150px"></a></li>
+            <li><a href="home2.php">Home</a></li>
+            <li><a href="product2.php">Products</a></li>
+            <li><a href="userprofile2.php">Seller Profile</a></li>
+            <li><a href="order_status2.php">Orders</a></li>
+            <li class="logout"><a href="logout2.php">Logout</a></li>
+        </ul>
+    </nav>
 
-<nav>
-    <ul>
-        <li class="logo"><a href="home2.php"><img src="logo2.png" alt="Logo" width="125px"></a></li>
-        <li><a href="home2.php">Home</a></li>
-        <li><a href="product2.php">Products</a></li>
-        <li><a href="userprofile2.php">Seller Profile</a></li>
-        <li><a href="order_status2.php"> Orders </a></li>
-        <li style="float:right"><a href="logout2.php">Logout</a></li>
-       
-    </ul>
-</nav>
+    <?php
+    // Check if the welcome message has been displayed
+    if (!isset($_SESSION['welcomeDisplayed'])) {
+        // Display the welcome message
+        echo '<h2 id="welcomeMessage">Welcome, ' . $_SESSION['sellerName'] . '</h2>';
+        
+        // Set the flag in the session to indicate the welcome message has been displayed
+        $_SESSION['welcomeDisplayed'] = true;
+    }
+    ?>
 
-
-
-<form method="get" action="">
-    <div class="form-group">
-        <label for="productCategories" class="label-inline">Filter by Product Categories:</label>
-        <select id="productCategories" name="productCategories" class="select-inline">
+    <form method="get" action="home2.php">
+        <label for="productCategories">Filter by category:</label>
+        <select name="productCategories" id="productCategories">
             <option value="">All Products</option>
-            <?php foreach ($productCategories as $productCategory): ?>
-                <option value="<?php echo $productCategory['productCategories']; ?>" <?php echo $productCategory['productCategories'] === $productCategories ? 'selected' : ''; ?>>
-                    <?php echo $productCategory['productCategories']; ?>
+            <?php foreach ($productCategories as $category): ?>
+                <option value="<?php echo $category['productCategories']; ?>" <?php echo ($category['productCategories'] === $productCategories) ? 'selected' : ''; ?>>
+                    <?php echo $category['productCategories']; ?>
                 </option>
             <?php endforeach; ?>
         </select>
         <button type="submit">Filter</button>
-    </div>
-</form>
+    </form>
 
-
-<table>
-    <tr>
-        <th>Product ID</th>
-        <th>Product Name</th>
-        <th>Product Description</th>
-        <th>Product Price</th>
-        <th>Product Image</th>
-        <th>Action</th>
-    </tr>
-
-    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+    <table>
         <tr>
-            <td><?php echo $row['productID']; ?></td>
-            <td><?php echo $row['productName']; ?></td>
-            <td><?php echo $row['productDescription']; ?></td>
-            <td>$<?php echo $row['productPrice']; ?></td>
-            <td><img src="data:image/jpeg;base64,<?php echo base64_encode(file_get_contents($row['productImage'])); ?>" alt="Product Image" style="max-width: 150px; max-height: 150px;"></td>
-            <td>
-                <form method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="productID" value="<?php echo $row['productID']; ?>">
-                    <div>
-                        <label for="productName">Product Name:</label>
-                        <input type="text" id="productName" name="productName" value="<?php echo $row['productName']; ?>" required>
-                    </div>
-                    <div>
-                        <label for="productDescription">Product Description:</label>
-                        <textarea id="productDescription" name="productDescription" required><?php echo $row['productDescription']; ?></textarea>
-                    </div>
-                    <div>
-                        <label for="productPrice">Product Price:</label>
-                        <input type="text" id="productPrice" name="productPrice" value="<?php echo $row['productPrice']; ?>" required>
-                    </div>
-    <div> 
-    <label for="productImage">Product Image:</label>
-    <input type="file" id="productImage" name="productImage" accept="image/*">
-    </div>
-
-                    <div>
-                        <label for="productCategories">Product Categories:</label>
-                        <select id="productCategories" name="productCategories" required>
-                            <option value="">Select a Category</option>
-                            <?php foreach ($productCategories as $productCategory): ?>
-                                <option value="<?php echo $productCategory['productCategories']; ?>" <?php echo $productCategory['productCategories'] === $row['productCategories'] ? 'selected' : ''; ?>>
-                                    <?php echo $productCategory['productCategories']; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <button type="submit" name="update">Update Product</button>
-                        <button type="submit" name="delete">Delete Product</button>
-                    </div>
-                </form>
-            </td>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Product Description</th>
+            <th>Product Price</th>
+            <th>Product Image</th>
+            <th>Action</th>
         </tr>
-    <?php endwhile; ?>
-</table>
+
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <tr>
+                <td><?php echo $row['productID']; ?></td>
+                <td><?php echo $row['productName']; ?></td>
+                <td><?php echo $row['productDescription']; ?></td>
+                <td>$<?php echo $row['productPrice']; ?></td>
+                <td><img src="data:image/jpeg;base64,<?php echo base64_encode(file_get_contents($row['productImage'])); ?>" alt="Product Image" style="max-width: 150px; max-height: 150px;"></td>
+                <td>
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="productID" value="<?php echo $row['productID']; ?>">
+                        <div>
+                            <label for="productName">Product Name:</label>
+                            <input type="text" id="productName" name="productName" value="<?php echo $row['productName']; ?>" required>
+                        </div>
+                        <div>
+                            <label for="productDescription">Product Description:</label>
+                            <textarea id="productDescription" name="productDescription" required><?php echo $row['productDescription']; ?></textarea>
+                        </div>
+                        <div>
+                            <label for="productPrice">Product Price:</label>
+                            <input type="text" id="productPrice" name="productPrice" value="<?php echo $row['productPrice']; ?>" required>
+                        </div>
+                        <div> 
+                            <label for="productImage">Product Image:</label>
+                            <input type="file" id="productImage" name="productImage" accept="image/*">
+                        </div>
+                        <div>
+                            <label for="productCategories">Product Categories:</label>
+                            <select id="productCategories" name="productCategories" required>
+                                <option value="">Select a Category</option>
+                                <?php foreach ($productCategories as $productCategory): ?>
+                                    <option value="<?php echo $productCategory['productCategories']; ?>" <?php echo $productCategory['productCategories'] === $row['productCategories'] ? 'selected' : ''; ?>>
+                                        <?php echo $productCategory['productCategories']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" name="update">Update Product</button>
+                            <button type="submit" name="delete">Delete Product</button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+        <?php endwhile; ?>
+    </table>
 
 </body>
 </html>
