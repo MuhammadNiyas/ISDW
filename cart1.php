@@ -180,12 +180,177 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="style3.css">
-    <title>Cart</title>
-    <style>
+<title>Cart</title>
+<style>
+body {
+    margin: 0;
+    font-family:  sans-serif;
+    
+  }
+  .topnav {
+    overflow: hidden;
+    background-color: #000;
+  }
   
+  .topnav a {
+    float: right;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 15px;
+    text-transform: uppercase
+  }
+  
+  .topnav a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  .topnav a.active {
+    background-color: #536bdd;
+    color: white;
+  }
 
-.summary-box {
+
+
+
+  .cart-title {
+    text-align: center;
+    font-size: 28px; /* Change the font size as desired */
+}
+
+.cart-icon {
+    margin-right: 5px;
+}
+
+.cart-title:hover {
+    color: #536bdd; /* Change to desired hover color */
+}
+
+
+
+
+  /button hover/
+  button[name="update_quantity"] {
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Add transition for smooth effect */
+    font-size: 13px; /* Increase the font size as desired */
+  }
+  
+  button[name="update_quantity"]:hover {
+    background-color: #536bdd;
+  }
+
+  .remove-button {
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Styles for the button when hovered */
+  .remove-button:hover {
+    background-color: #536bdd;
+  }
+
+
+  /icon/
+  .topnav a i {
+    margin-right: 5px;
+  font-size: 20px; /* Adjust the font size as desired */
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  }
+
+  
+  /* Cart Styles */
+.shopping-cart {
+    background-color: #fff;
+    padding: 20px;
+   
+  }
+  
+  .shopping-cart h2 {
+ 
+    font-weight: bold;
+    text-align: center;
+    font-size: 28px; /* Change the font size as desired */
+  }
+  
+  .shopping-cart hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  table th,
+  table td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  table tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .price-details {
+    margin-top: 20px;
+  }
+  
+  .price-details h6 {
+    font-weight: bold;
+  }
+  
+  .price-details hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .price-details .text-success {
+    color: green;
+  }
+
+
+/*order summary split with shopping cart */
+.cart-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.shopping-cart {
+  flex: 80%; /* Adjust the width as desired */
+  padding-right: 1px;
+}
+
+.order-summary {
+  flex: 30%; /* Adjust the width as desired */
+  padding: 30px;
+  border-radius: 5px;
+  margin-right: 1%;
+}
+
+  .summary-box {
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     padding: 10px;
@@ -202,18 +367,154 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     margin-bottom: 20px;
    
 }
+  
+  
+  .order-summary h2 {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 29px;
+  }
+  
+  .summary-table {
+    width: 100%;
+  }
+  
+  .summary-table th,
+  .summary-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+  }
+  
+  .summary-table .total {
+    font-weight: bold;
+  }
+  
+  .summary-table td:last-child {
+    text-align: right;
+  }
+  
+  .buyer-info {
+    text-align: left;
+  }
+  
+  .buyer-info h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .buyer-info p {
+    margin-bottom: 5px;
+    text-align: left;
+  }
+  
+  .checkout-button {
+    display: block;
+    width: 107%;
+    padding: 10px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    
+  }
+  
+  .checkout-button:hover {
+    background-color: #536bdd;
+  }
+  
+
+ /* Footer Styles */
+ footer {
+    background-color: #000;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .footer-content {
+    max-width: 960px;
+    margin: 0 auto;
+    color: #fff;
+  }
+  
+ .social-media ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+  }
+  
+  .social-media ul li {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+  .social-media ul li a {
+    color: #fff;
+    font-size: 20px;
+  }
+  
+.footer-icons {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.footer-icons a {
+  color: #fff;
+  font-size: 20px;
+  margin: 0 10px;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+
+
+
+  /* Other Styles */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  p {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #111;
+  }
+  
+  
+
+
  
     </style>
 </head>
 <body>
     <div class="topnav">
         <img src="logo2.png" alt="Logo" width="150px">
-        <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> LOGOUT</a>
+        <a href="view_transaction.php"><i class="	fas fa-money-check-alt"></i></a>
+    <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> </a>
+        <a href="process_form.php"><i class="fas fa-paper-plane"></i> CONTACT US</a> 
         <a href="userprofile1.php"><i class="fas fa-user"></i> USER PROFILE</a>
+        <a href="reserve.php" ><i class="far fa-calendar-alt"></i> RESERVE</a>
         <a href="cart1.php" class="active"><i class="fas fa-shopping-cart"></i> CART</a>
         <a href="home1.php"><i class="fas fa-home"></i> HOME</a>
     </div>
 
+    <div class="cart-container">
     <div class="shopping-cart">
         <h2>My Cart</h2>
         <hr>
@@ -278,19 +579,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </tr>
         </table>
     </div>
-</div>
-
-
-
-
-
-
-
-<form method="post" action="checkout1.php">
+    <form method="post" action="checkout1.php">
         <button type="submit" class="checkout-button" <?php echo empty($cartItems) ? 'disabled' : ''; ?>>Proceed to Checkout</button>
     </form>
-         
+</div>
+            </div>
 
+   
+    <footer>
+  <div class="footer-content">
+    <p>&copy; 2023 BUY AND SELL DISTED COLLEGE. All rights reserved.</p>
+    
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h4>Contact Information</h4>
+        <p>Email: info@example.com</p>
+        <p>Phone: +1 123-456-7890</p>
+        <p>Address: 123 Street, City, Country</p>
+        <div class="social-media">
+          <h4>Follow Us</h4>
+          <ul>
+            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a></li>
+            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a></li>
+            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-icons">
+      <a href="home1.php"><i class=""></i>Home</a>
+      <a href="cart1.php"><i class=""></i>Cart</a>
+      <a href="userprofile1.php"><i class=""></i>User Profile</a>
+    </div>
+     
+      
+
+</footer>
 
     
 </body>
