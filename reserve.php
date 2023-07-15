@@ -301,7 +301,7 @@ if (isset($_POST['proceed_to_checkout'])) {
     <a href="reserve.php" class="active"><i class="far fa-calendar-alt"></i> RESERVE</a>
     <a href="cart1.php"><i class="fas fa-shopping-cart"></i> CART</a>
     <a href="home1.php"><i class="fas fa-home"></i> HOME</a>
-    <div class="search-bar">
+
 
     </div>
 </div>
@@ -358,8 +358,8 @@ if (isset($_POST['proceed_to_checkout'])) {
                             <td><?php echo $productData['productName']; ?></td>
                             <td><?php echo $productData['productID']; ?></td>
                             <td><img src="<?php echo $productData['productImage']; ?>" alt="Product Image" width="100px"></td>
-                            <td><?php echo $productData['productPrice']; ?></td>
-                            <td><?php echo $totalCost; ?></td>
+                            <td>RM<?php echo $productData['productPrice']; ?></td>
+                            <td>RM<?php echo $totalCost; ?></td>
                             <td><?php echo $reservationData['reserveDate']; ?></td>
                             <td><?php echo $reservationData['reserveTime']; ?></td>
                             <td>
@@ -393,14 +393,14 @@ if (isset($_POST['proceed_to_checkout'])) {
                 <tr>
                     <td><?php echo $item['productID']; ?></td>
                     <td><?php echo $item['productName']; ?></td>
-                    <td>$<?php echo $item['productPrice']; ?></td>
+                    <td>RM<?php echo $item['productPrice']; ?></td>
                 </tr>
                 <?php
             }
             ?>
             <tr>
                 <td colspan="2"><strong>Subtotal</strong></td>
-                <td>$<?php echo $subtotal; ?></td>
+                <td>RM<?php echo $subtotal; ?></td>
             </tr>
         </table>
 
