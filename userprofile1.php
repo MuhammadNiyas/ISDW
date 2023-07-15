@@ -32,69 +32,117 @@ $row = mysqli_fetch_assoc($result);
 
 // Update user details
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve and sanitize user input
     $buyerName = mysqli_real_escape_string($conn, $_POST['buyerName']);
-    $buyerPhoneNumber = mysqli_real_escape_string($conn, $_POST['buyerPhoneNumber']);
     $buyerEmail = mysqli_real_escape_string($conn, $_POST['buyerEmail']);
+    $buyerPhoneNumber = mysqli_real_escape_string($conn, $_POST['buyerPhoneNumber']);
     $buyerAddress = mysqli_real_escape_string($conn, $_POST['buyerAddress']);
 
-    // Handle profile picture upload
-    if ($_FILES['profilePicture']['name']) {
-        $file_name = $_FILES['profilePicture']['name'];
-        $file_tmp = $_FILES['profilePicture']['tmp_name'];
-        $file_type = $_FILES['profilePicture']['type'];
-        $file_size = $_FILES['profilePicture']['size'];
-        $file_error = $_FILES['profilePicture']['error'];
-
-        // Check if uploaded file is an image
-        $allowed_extensions = array("jpg", "jpeg", "png");
-        $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        if (!in_array($file_extension, $allowed_extensions)) {
-            $error_message = "Invalid file type. Only JPG, JPEG, and PNG images are allowed.";
-        } elseif ($file_error !== 0) {
-            $error_message = "Error uploading file. Please try again.";
-        } else {
-            // Generate a unique filename and move the uploaded file to the destination directory
-            $new_filename = uniqid() . '.' . $file_extension;
-            $destination = "profile_pictures/" . $new_filename;
-            if (move_uploaded_file($file_tmp, $destination)) {
-                // Delete the previous profile picture if it exists
-                if (!empty($row['profilePicture'])) {
-                    unlink("profile_pictures/" . $row['profilePicture']);
-                }
-
-                // Update the database with the new profile picture filename
-                $updateQuery = "UPDATE Buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress', profilePicture = '$new_filename' WHERE buyerID = $buyerID";
-                $updateResult = mysqli_query($conn, $updateQuery);
-
-                if ($updateResult) {
-                    $_SESSION['success_message'] = "Profile updated successfully.";
-                    header("Location: home1.php");
-                    exit();
-                } else {
-                    $error_message = "Profile update failed. Please try again.";
-                }
-            } else {
-                $error_message = "Error moving uploaded file. Please try again.";
-            }
+    // Validate user input
+    function validateName($name) {
+        // Check if name is not empty and contains only letters and spaces
+        if (empty($name) || !preg_match("/^[a-zA-Z ]*$/", $name)) {
+            return false;
         }
-    } else {
-        // Update user details without changing the profile picture
-        $updateQuery = "UPDATE Buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress' WHERE buyerID = $buyerID";
-        $updateResult = mysqli_query($conn, $updateQuery);
+        return true;
+    }
 
-        if ($updateResult) {
-            $_SESSION['success_message'] = "Profile updated successfully.";
-            header("Location: home1.php");
-            exit();
+    function validateEmail($email) {
+        // Check if email is valid
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        return true;
+    }
+
+    function validatePhoneNumber($phoneNumber) {
+        // Remove any non-digit characters
+        $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+
+        // Check if the phone number has exactly 10 digits
+        if (strlen($phoneNumber) !== 10) {
+            return false;
+        }
+        return true;
+    }
+
+    function validateAddress($address) {
+        // Check if address is not empty
+        if (empty($address)) {
+            return false;
+        }
+        return true;
+    }
+
+    if (!validateName($buyerName)) {
+        $error_message = "Invalid name. Please enter a valid name.";
+    } elseif (!validateEmail($buyerEmail)) {
+        $error_message = "Invalid email. Please enter a valid email address.";
+    } elseif (!validatePhoneNumber($buyerPhoneNumber)) {
+        $error_message = "Invalid phone number. Please enter a 10-digit phone number.";
+    } elseif (!validateAddress($buyerAddress)) {
+        $error_message = "Invalid address. Please enter a valid address.";
+    } else {
+        // User input is valid, proceed with updating the user details
+
+        // Handle profile picture upload
+        if ($_FILES['profilePicture']['name']) {
+            $file_name = $_FILES['profilePicture']['name'];
+            $file_tmp = $_FILES['profilePicture']['tmp_name'];
+            $file_type = $_FILES['profilePicture']['type'];
+            $file_size = $_FILES['profilePicture']['size'];
+            $file_error = $_FILES['profilePicture']['error'];
+
+            // Check if uploaded file is an image
+            $allowed_extensions = array("jpg", "jpeg", "png");
+            $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            if (!in_array($file_extension, $allowed_extensions)) {
+                $error_message = "Invalid file type. Only JPG, JPEG, and PNG images are allowed.";
+            } elseif ($file_error !== 0) {
+                $error_message = "Error uploading file. Please try again.";
+            } else {
+                // Generate a unique filename and move the uploaded file to the destination directory
+                $new_filename = uniqid() . '.' . $file_extension;
+                $destination = "profile_pictures/" . $new_filename;
+                if (move_uploaded_file($file_tmp, $destination)) {
+                    // Delete the previous profile picture if it exists
+                    if (!empty($row['profilePicture'])) {
+                        unlink("profile_pictures/" . $row['profilePicture']);
+                    }
+
+                    // Update the database with the new profile picture filename
+                    $updateQuery = "UPDATE Buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress', profilePicture = '$new_filename' WHERE buyerID = $buyerID";
+                    $updateResult = mysqli_query($conn, $updateQuery);
+
+                    if ($updateResult) {
+                        $_SESSION['success_message'] = "Profile updated successfully.";
+                        header("Location: home1.php");
+                        exit();
+                    } else {
+                        $error_message = "Profile update failed. Please try again.";
+                    }
+                } else {
+                    $error_message = "Error moving uploaded file. Please try again.";
+                }
+            }
         } else {
-            $error_message = "Profile update failed. Please try again.";
+            // Update user details without changing the profile picture
+            $updateQuery = "UPDATE Buyers SET buyerName = '$buyerName', buyerPhoneNumber = '$buyerPhoneNumber', buyerEmail = '$buyerEmail', buyerAddress = '$buyerAddress' WHERE buyerID = $buyerID";
+            $updateResult = mysqli_query($conn, $updateQuery);
+
+            if ($updateResult) {
+                $_SESSION['success_message'] = "Profile updated successfully.";
+                header("Location: home1.php");
+                exit();
+            } else {
+                $error_message = "Profile update failed. Please try again.";
+            }
         }
     }
 }
 
 mysqli_close($conn);
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -188,7 +236,7 @@ mysqli_close($conn);
             border-radius: 4px;
             display: flex;
             justify-content: center;
-      
+
         }
 
         button[type="submit"]:hover {
@@ -214,18 +262,18 @@ mysqli_close($conn);
         }
 
         .success-message {
-    margin-top: 30px;
-    text-align: center;
-    color: green; /* Set the color to green */
-    font-weight:bold;
-}
+            margin-top: 30px;
+            text-align: center;
+            color: green; /* Set the color to green */
+            font-weight:bold;
+        }
 
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    margin-bottom: 50px; /* Increase the bottom margin to create distance from the footer */
-}
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-bottom: 50px; /* Increase the bottom margin to create distance from the footer */
+        }
 
         .popup {
             position: relative;
@@ -310,36 +358,31 @@ mysqli_close($conn);
             text-decoration: none;
         }
 
+        .file-input {
+            display: none;
+        }
 
+        .file-input-container {
+            display: flex;
+            align-items: flex-start; /* Align items to the top */
+        }
 
+        .choose-file-link {
+            padding: 10px 40px;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            margin-left: 125px;
+            margin-top: -45px;
+        }
 
-.file-input {
-    display: none;
-}
-
-.file-input-container {
-    display: flex;
-    align-items: flex-start; /* Align items to the top */
-}
-
-.choose-file-link {
- padding: 10px 40px;
- color: #000;
-   font-weight:bold;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-   margin-left:125px;
-    margin-top:-45px;
-}
-
-
-
-.selected-file {
-    margin-top: 5px;
-    font-size: 14px;
-}
+        .selected-file {
+            margin-top: 5px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -362,16 +405,16 @@ mysqli_close($conn);
             <img src="profile_pictures/<?php echo $row['profilePicture']; ?>" class="profile-pic" alt="Profile Picture">
         </div>
         <form method="post" enctype="multipart/form-data">
-        <?php if (isset($_SESSION['success_message'])): ?>
-            <div class="success-message"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                <div class="success-message"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+            <?php endif; ?>
             <div>
                 <label for="buyerName">Name:</label>
                 <input type="text" id="buyerName" name="buyerName" value="<?php echo $row['buyerName']; ?>" required>
             </div>
             <div>
                 <label for="buyerEmail">Email:</label>
-                <input type="text" id="buyerEmail" name="buyerEmail" value="<?php echo $row['buyerEmail']; ?>" required>
+                <input type="email" id="buyerEmail" name="buyerEmail" value="<?php echo $row['buyerEmail']; ?>" required>
             </div>
             <div>
                 <label for="buyerPhoneNumber">Phone Number:</label>
@@ -381,30 +424,21 @@ mysqli_close($conn);
                 <label for="buyerAddress">Address:</label>
                 <input type="text" id="buyerAddress" name="buyerAddress" value="<?php echo $row['buyerAddress']; ?>" required>
             </div>
-          <div>
-          <div>
-    <label for="profilePicture">Profile Picture:</label>
-    <div class="file-input-container">
-        <input type="file" id="profilePicture" name="profilePicture" class="file-input" style="display: none;">
-        <a href="#" onclick="document.getElementById('profilePicture').click()" class="choose-file-link">Upload</a>
-
-
-        <span class="selected-file"></span>
-    </div>
-</div>
-
+            <div>
+                <label for="profilePicture">Profile Picture:</label>
+                <div class="file-input-container">
+                    <input type="file" id="profilePicture" name="profilePicture" class="file-input" style="display: none;">
+                    <a href="#" onclick="document.getElementById('profilePicture').click()" class="choose-file-link">Upload</a>
+                    <span class="selected-file"></span>
+                </div>
+            </div>
             <button type="submit">Update Profile</button>
         </form>
-      
     </div>
-      
-    </div>
-    
 
     <footer>
         <div class="footer-content">
             <p>&copy; 2023 BUY AND SELL DISTED COLLEGE. All rights reserved.</p>
-
             <div class="row">
                 <div class="col-md-12 text-center">
                     <h4>Contact Information</h4>
