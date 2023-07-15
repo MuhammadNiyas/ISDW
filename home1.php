@@ -212,20 +212,23 @@ if ($reservationResult && mysqli_num_rows($reservationResult) > 0) {
     background-color: #000;
   }
   
-  .topnav a {
-    float: right;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 15px;
-    text-transform: uppercase
-  }
-  
-  .topnav a:hover {
-    background-color: #ddd;
-    color: black;
-  }
+ 
+    .topnav a {
+        float: right;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 15px;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
   
   .topnav a.active {
     background-color: #536bdd;
@@ -235,9 +238,6 @@ if ($reservationResult && mysqli_num_rows($reservationResult) > 0) {
 .topnav a i {
   margin-right: 5px;
   font-size: 20px;
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
 }
 
 .topnav .logo {
@@ -350,121 +350,112 @@ if ($reservationResult && mysqli_num_rows($reservationResult) > 0) {
 
  /*home category section starts */
 
-  .home-category .slide {
-    text-align: center;
-    text-decoration: none; /* Add text-decoration */
-    color: #000;
-    border: var(--border);
-    border-radius: .5rem;
-    padding: 1.5rem;
-    box-shadow: var(--box-shadow);
-    background-color: transparent;
-    display: inline-block;
-    transition: background-color 0.3s ease;
-    width: 250px;
-    height: 300px;
-    margin: 25px;
-  }
+ .home-category {
+      text-align: center;
+      margin-top: 50px;
+    }
 
+    .category-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
 
-  
-  .category-item {
-    background-color: transparent;
-    border: none;
-    color: black;
-    cursor: pointer;
-  }
-  .home-category .slide img {
-    height: 10rem;
-    width: 10rem;
-    object-fit: contain;
-    margin-bottom: 1rem;
-    margin-top: 1rem; /* Add margin top */
-  }
+    .category-item {
+      text-decoration: none;
+      color: black;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+    }
 
-  .home-category .slide h3 {
-    color: #000;
-    margin-top: 1rem; /* Add margin top */
-  }
+    .category-item button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: transparent;
+      transition: background-color 0.3s ease;
+      width: 230px;
+    }
 
-  .category-title {
-    font-size: 20px;
-    text-decoration: none;
-  }
-  
-  
-  .home-category .slide:hover {
-    background-color: #536bdd;
-  }
-  
-  .home-category .slide:hover img {
-    filter: invert();
-  }
-  
-  .home-category .slide:hover h3 {
-    color: #fff;
-  }
+    .category-item button:hover {
+      background-color: #536bdd;
+    }
+
+    .category-item img {
+      height: 100px;
+      width: 100px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+
+    .category-item h3 {
+      color: #000;
+    }
   
  /*product section */
           
-          
-          .price {
-            color: grey;
-            font-size: 22px;
-          }
-          
-          .card1 {
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-            max-width: 300px;
-            margin: auto;
+          .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .product {
+            width: 300px;
+            height: 400px;
+            margin: 10px;
+            padding: 10px;
+            box-sizing: border-box;
             text-align: center;
-            font-family: arial;
-          }
-          
-          .card1 button {
+            font-family: Arial, sans-serif;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .product h3 {
+            margin-top: 0;
+        }
+
+        .product img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .product p {
+            margin: 0;
+        }
+
+        .product button {
             border: none;
-            outline: 0;
+            outline: none;
             padding: 12px;
             color: white;
-            background-color: #536bdd;
+            background-color: #292929;
             text-align: center;
             cursor: pointer;
             width: 100%;
             font-size: 18px;
-          }
-          
-          .card1 button:hover {
-            opacity: 0.7;
+        }
 
-          }
-          
-          
-          
-          .product {
-            float: left;
-            width: 33.3%;
-            padding: 10px; 
-          }
-          
-          .product h3 {
-            margin-top: 0;
-          }
-          
-          .product img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;
-            /* Force resize the image to a standard size */
-            max-width: 300px;
-            max-height: 200px;
-            justify-content: center;
-            align-items: center;
-            
-          }
-          
-          .product p {
-            margin: 0;
-          }
+        .product button:hover {
+            background-color: #536bdd;
+        }
+
+        .reserved-product {
+            background-color: red;
+            color: white;
+            padding: 5px;
+        }
 
 
 /* Cart Styles */
@@ -569,7 +560,7 @@ footer {
 </style>
  </head>
 <body>
-<div class="topnav">
+<div class="topnav" >
     <img src="logo2.png" alt="Logo" width="150px">
     <a href="view_transaction.php"><i class="	fas fa-money-check-alt"></i></a>
     <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> </a>
@@ -585,131 +576,126 @@ footer {
     </form>
     </div>
 </div>
-
+</div>
 
 <div class="header">
 <h1>WELCOME TO OUR WEBSITE</h1>
 <p>Feel free to browse around and check out our services!</p>
 </div>
 
-<h1 style="text-align:center">About Us</h1>
+<h1 style="text-align:center; margin-top: 20px; margin-bottom: 20px;"; >About Us</h1>
 <div class="about-section">
-<p>Some text about who we are and what we do.</p>
-  <p>Resize the browser window to see that this page is responsive by the way.</p>
+<p>At  BUY AND SELL DISTED COLLEGE, we are passionate about bringing you the best deals on high-quality used systems.
+  <p> We understand that technology moves at a rapid pace, and keeping up with the latest advancements can be expensive.
+    <p> That's why we've created a platform where you can buy and sell used systems, making it easier and more affordable for everyone.</p>
 </div>
+
 
 <h1 style="text-align:center">Category</h1>
-<section class = "home-category">
-    <div class = "swiper category-slider">
-    <div class="swiper-wrapper">
+  <section class="home-category">
+    <div class="category-container">
+      <form method="post" action="" class="category-item">
+        <input type="hidden" name="category" value="">
+        <button type="submit" name="filter_button">
+          <img src="icon-12.png" alt="All Categories" class="category-image">
+          <h3 class="category-title">All Categories</h3>
+        </button>
+      </form>
+
+      <form method="post" action="" class="category-item">
+        <input type="hidden" name="category" value="stationery">
+        <button type="submit" name="filter_button">
+          <img src="icon-10.png" alt="Stationery" class="category-image">
+          <h3 class="category-title">Stationery</h3>
+        </button>
+      </form>
+
+      <form method="post" action="" class="category-item">
+        <input type="hidden" name="category" value="electronics">
+        <button type="submit" name="filter_button">
+          <img src="icon-14.png" alt="Electronics" class="category-image">
+          <h3 class="category-title">Electronics</h3>
+        </button>
+      </form>
+
+      <form method="post" action="" class="category-item">
+        <input type="hidden" name="category" value="clothes">
+        <button type="submit" name="filter_button">
+          <img src="icon-9.png" alt="Clothes" class="category-image">
+          <h3 class="category-title">Clothes</h3>
+        </button>
+      </form>
+
+      <form method="post" action="" class="category-item">
+        <input type="hidden" name="category" value="shoes">
+        <button type="submit" name="filter_button">
+          <img src="icon-13.png" alt="Shoes" class="category-image">
+          <h3 class="category-title">Shoes</h3>
+        </button>
+      </form>
+
+      <form method="post" action="" class="category-item">
+        <input type="hidden" name="category" value="health&beauty">
+        <button type="submit" name="filter_button">
+          <img src="icon-11.png" alt="Health&Beauty" class="category-image">
+          <h3 class="category-title">Health & Beauty</h3>
+        </button>
+      </form>
+    </div>
+    <div style="margin-top: 50px;"></div>
+  </section>
+
+  <h1 style="text-align: center;">Latest Products</h1>
+    <div class="container">
+        <div class="products">
+            <?php
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $productID = $row["productID"];
+                    $productName = $row["productName"];
+                    $productPrice = $row["productPrice"];
+                    $productImage = $row["productImage"];
+                    $productDescription = $row["productDescription"];
+                    ?>
+                    <div class="product">
+                        <div class="card1">
+                            <form method="post" action="">
+                                <h3><?php echo $row['productName']; ?></h3>
+                                <img src="data:image/jpeg;base64,<?php echo base64_encode(file_get_contents($row['productImage'])); ?>" alt="Product Image">
+                                <p><?php echo $row['productDescription']; ?></p>
+                                <p>Price: RM<?php echo $row['productPrice']; ?></p>
+                                <?php if (in_array($productID, $reservedProductIDs)): ?>
+                                    <div class="reserved-product">
+                                        <p class="reserved-label"></p>
+                                    </div>
+                                <?php endif; ?>
+                                <input type="hidden" name="productID" value="<?php echo $row['productID']; ?>">
+                                <?php if (in_array($productID, $reservedProductIDs)): ?>
+                                   <button type="button" disabled style="background-color: red; color: white;">Reserved</button>
+<?php else: ?>
+                                    <form method="POST" action="reserve.php">
+                                        <input type="hidden" name="productID" value="<?php echo $productID; ?>">
+                                        <button type="submit" name="reserve_product" onclick="return confirmReservation();">Reserve</button>
+                                    </form>
+                                    <form method="POST" action="">
+                                        <input type="hidden" name="productID" value="<?php echo $productID; ?>">
+                                        <button type="submit" name="add_to_cart">Add to Cart</button>
+                                    </form>
+                                <?php endif; ?>
+                            </form>
+                        </div>
+                    </div>
+                    <?php
+                }
+            } else {
+                echo "<p>No products found.</p>";
+            }
+            ?>
+        </div>
+    </div>
 
    
-        
-<form method="post" action="" class ="swiper-slide slide">
-    <input type="hidden" name="category" value="">
-    <button type="submit" name="filter_button" class="category-item">
-        <img src="icon-12.png" alt="All Categories" class="category-image">
-        <h3 class="category-title">All Categories</h3>
-    </button>
-</form>
 
-<form method="post" action="" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="stationery">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-10.png" alt="Stationery" class="category-image">
-                    <h3 class="category-title">Stationery</h3>
-                </button>
-            </form>
-
-            <form method="post" action="" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="electronics">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-14.png" alt="Electronics" class="category-image">
-                    <h3 class="category-title">Electronics</h3>
-                </button>
-            </form>
-
-            <form method="post" action="" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="clothes">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-9.png" alt="Clothes" class="category-image">
-                    <h3 class="category-title">Clothes</h3>
-                </button>
-            </form>
-
-            <form method="post" action="" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="shoes">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-13.png" alt="Shoes" class="category-image">
-                    <h3 class="category-title">Shoes</h3>
-                </button>
-            </form>
-
-            <form method="post" action="" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="health&beauty">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-11.png" alt="Health&Beauty" class="category-image">
-                    <h3 class="category-title">H&B</h3>
-                </button>
-            </form>
-         
-</div>
-</div>
-    </div>
-</section>
-
-    <h1 style="text-align:center">Latest Product</h1>
-<div class="container">
-<div class="products">
-
-    <?php
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $productID = $row["productID"];
-            $productName = $row["productName"];
-            $productPrice = $row["productPrice"];
-            $productImage = $row["productImage"];
-            ?>
-            <div class="product">
-            <div class="card1">
-                <form method="post" action="">
-                <h3><?php echo $row['productName']; ?></h3>
-            <img src="data:image/jpeg;base64,<?php echo base64_encode(file_get_contents($row['productImage'])); ?>" alt="Product Image">
-            <p><?php echo $row['productDescription']; ?></p>
-            <p>Price: $<?php echo $row['productPrice']; ?></p> 
-            <?php if (in_array($productID, $reservedProductIDs)): ?>
-
-    <div class="reserved-product">
-        <p class="reserved-label"></p>
-    </div>
-    <?php endif; ?>
-<input type="hidden" name="productID" value="<?php echo $row['productID']; ?>">
-
-<?php if (in_array($productID, $reservedProductIDs)): ?>
-  <button type="button" disabled style="background-color: red; color: white;">Reserved</button>
-<?php else: ?>
-  <form method="POST" action="reserve.php">
-    <input type="hidden" name="productID" value="<?php echo $productID; ?>">
-    <button type="submit" name="reserve_product" onclick="return confirmReservation();">Reserve</button>
-  </form>
-  <form method="POST" action="">
-    <input type="hidden" name="productID" value="<?php echo $productID; ?>">
-    <button type="submit" name="add_to_cart">Add to Cart</button>
-  </form>
-<?php endif; ?>
-
-</form>
- </form>
-            </div>
-            </div>
-            <?php
-        }
-    } else {
-        echo "<p>No products found.</p>";
-    }
-    ?>
-</div>
-</div>
 
 
 <script>
