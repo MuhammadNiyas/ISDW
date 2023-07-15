@@ -33,12 +33,167 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <title>Contact Us</title>
-    <link rel="stylesheet" type="text/css" href="style8.css">
+  
     <!-- Represent the social media icon-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-image: url("image21.jpeg");
+    background-size: cover;
+    background-position: center;
+    color: #fff; /* Set text color to white */
+   
+  
+}
+
+.topnav {
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .topnav a {
+            float: right;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .topnav a.active {
+           background-color: #536bdd;
+        }
+
+        /icon/
+        .topnav a i {
+            margin-right: 5px;
+            font-size: 20px;
+            /* Adjust the font size as desired */
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+        }
+
+
+        h2 {
+    color: #fff; /* Set title color to white */
+    text-align: center; /* Center align the title */
+}
+
+form {
+    max-width: 400px;
+      margin: 0 auto; /* Center align the form */
+    text-align: center; /* Center align form elements */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #fff; /* Set label color to white */
+    text-align: left; /* Align labels to the left */
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    font-weight: bold;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.8); /* Set input background color to semi-transparent white */
+    color: #333; /* Set input text color to dark gray */
+    text-align: left; /* Align input text to the left */
+}
+
+textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+
+    input[type="submit"],
+input[type="back"] {
+    width: 100px; /* Remove fixed width */
+    display: inline-block;
+    padding: 10px 10px; /* Adjust padding as desired */
+    color: white;
+    text-decoration: none;
+    border: 3px solid #563bdd;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    background: transparent;
+    margin: 20px 10px;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+
+
+input[type="submit"]:hover,
+input[type="back"]:hover {
+    background-color: #563bdd;
+    width: 30%;
+}
+
+#confirmation {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    color: #333;
+    text-align: center;
+}
+
+#social-icons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#social-icons a {
+    display: inline-block;
+    margin-right: 10px;
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+#social-icons a:hover {
+    color: #563bdd;
+}
+
+
+
+        </style>
 </head>
 <body>
+
+<div class="topnav">
+    <img src="logo2.png" alt="Logo" width="150px">
+    <a href="view_transaction.php"><i class="	fas fa-money-check-alt"></i></a>
+    <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> </a>
+    <a href="process_form.php"><i class="fas fa-paper-plane"></i> CONTACT US</a>
+    <a href="userprofile1.php"><i class="fas fa-user"></i> USER PROFILE</a>
+    <a href="reserve.php" class="active"><i class="far fa-calendar-alt"></i> RESERVE</a>
+    <a href="cart1.php"><i class="fas fa-shopping-cart"></i> CART</a>
+    <a href="home1.php"><i class="fas fa-home"></i> HOME</a>
+</div>
+</div>
+
+
     <h2>Contact Us</h2>
     <div class="form-container">
         <form action="process_form.php" method="POST">
