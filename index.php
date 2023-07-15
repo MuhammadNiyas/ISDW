@@ -144,227 +144,207 @@ $result = mysqli_query($conn, $sql);
     border: none;
   }
   
-
-  /* Styles for the "About Us" and "Team" sections */
-  html {
+/*about us and our team*/
+html {
     box-sizing: border-box;
   }
-  
-  *,
-  *:before,
-  *:after {
+
+  *, *:before, *:after {
     box-sizing: inherit;
   }
-  
 
-  
+ 
   .about-section {
-    margin-top: 50px; /* Increase the margin-top value to create more space */
-    margin-bottom: 20px; /* Add margin-bottom for spacing consistency */
+    margin-top: 50px;
     padding: 50px;
     text-align: center;
     background-color: #000;
     color: white;
   }
-  
+
   .container {
     padding: 0 16px;
   }
-  
-  .container::after,
-  .row::after {
+
+  .container::after, .row::after {
     content: "";
     clear: both;
     display: table;
   }
 
-  .container p {
-    margin-bottom: 25px; /* add some bottom margin to create separation between lines */
-  }
-  
   .title {
     color: grey;
   }
-  
-  .button1 {
+
+  .button {
     text-decoration: none;
     border: none;
     outline: 0;
     display: inline-block;
     padding: 8px;
     color: white;
-    background-color: #000;
+    background-color: #536bdd;
     text-align: center;
     cursor: pointer;
     width: 100%;
   }
-  
-  .button1:hover {
+
+  .button:hover {
     background-color: grey;
   }
-  
+
   @media screen and (max-width: 768px) {
     .column {
       flex: 50%;
       max-width: 50%;
     }
   }
-  
+
   @media screen and (max-width: 600px) {
     .column {
       flex: 100%;
       max-width: 100%;
     }
   }
-  
-  /*home category section starts */
-  .home-category .slide {
-    text-align: center;
-    text-decoration: none; /* Add text-decoration */
-    color: #000;
-    border: var(--border);
-    border-radius: .5rem;
-    padding: 1.5rem;
-    box-shadow: var(--box-shadow);
-    background-color: transparent;
-    display: inline-block;
-    transition: background-color 0.3s ease;
-    width: 250px;
-    height: 300px;
-    margin: 25px;
-  }
+ /*home category section starts */
 
+ .home-category {
+      text-align: center;
+      margin-top: 50px;
+    }
 
-  
-  .category-item {
-    background-color: transparent;
-    border: none;
-    color: black;
-    cursor: pointer;
-  }
-  .home-category .slide img {
-    height: 10rem;
-    width: 10rem;
-    object-fit: contain;
-    margin-bottom: 1rem;
-    margin-top: 1rem; /* Add margin top */
-  }
+    .category-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
 
-  .home-category .slide h3 {
-    color: #000;
-    margin-top: 1rem; /* Add margin top */
-  }
+    .category-item {
+      text-decoration: none;
+      color: black;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+    }
 
-  .category-title {
-    font-size: 20px;
-    text-decoration: none;
-  }
-  
-  
-  .home-category .slide:hover {
-    background-color: #536bdd;
-  }
-  
-  .home-category .slide:hover img {
-    filter: invert();
-  }
-  
-  .home-category .slide:hover h3 {
-    color: #fff;
-  }
+    .category-item button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: transparent;
+      transition: background-color 0.3s ease;
+      width: 230px;
+    }
 
+    .category-item button:hover {
+      background-color: #536bdd;
+    }
+
+    .category-item img {
+      height: 100px;
+      width: 100px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+
+    .category-item h3 {
+      color: #000;
+    }
 
 
  /*product section */
           
           
- .price {
-    color: grey;
-    font-size: 22px;
-  }
-  
-  .card1 {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 300px;
-    margin: auto;
-    text-align: center;
-    font-family: arial;
-  }
-  
-  .card1 button {
-    border: none;
-    outline: 0;
-    padding: 12px;
-    color: white;
-    background-color: #536bdd;
-    text-align: center;
-    cursor: pointer;
-    width: 100%;
-    font-size: 18px;
-  }
-  
-  .card1 button:hover {
-    opacity: 0.7;
+ .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
 
-  }
-  
-  
-  
-  .product {
-    float: left;
-    width: 33.3%;
-    padding: 10px; 
-  }
-  
-  .product h3 {
-    margin-top: 0;
-  }
-  
-  .product img {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 10px;
-    /* Force resize the image to a standard size */
-    max-width: 300px;
-    max-height: 200px;
-    justify-content: center;
-    align-items: center;
-    
-  }
-  
-  .product p {
-    margin: 0;
-  }
+        .product {
+            width: 300px;
+            height: 400px;
+            margin: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
 
-    /* Footer Styles */
+        .product h3 {
+            margin-top: 0;
+        }
+
+        .product img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .product p {
+            margin: 0;
+        }
+
+        .product button {
+            border: none;
+            outline: none;
+            padding: 12px;
+            color: white;
+            background-color: #000;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .product button:hover {
+            background-color: #536bdd;
+        }
+
+        .reserved-product {
+            background-color: red;
+            color: white;
+            padding: 5px;
+        }
+   /* Footer Styles */
 footer {
-    background-color: #000;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .footer-content {
-    max-width: 960px;
-    margin: 0 auto;
-    color: #fff;
-  }
-  
- .social-media ul {
-    list-style: none;
-    padding: 0;
-    text-align: center;
-  }
-  
-  .social-media ul li {
-    display: inline-block;
-    margin-right: 10px;
-  }
-  
-  .social-media ul li a {
-    color: #fff;
-    font-size: 20px;
-  }
-  
+  background-color: #000;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 960px;
+  margin: 0 auto;
+  color: #fff;
+}
+
+.social-media ul {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+}
+
+.social-media ul li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.social-media ul li a {
+  color: #fff;
+  font-size: 20px;
+}
+
 .footer-icons {
   text-align: center;
   margin-top: 20px;
@@ -377,6 +357,7 @@ footer {
   transition: color 0.3s ease;
   text-decoration: none;
 }
+
         </style>
     
 </head>
@@ -401,76 +382,72 @@ footer {
 
 <h1 style="text-align:center; margin-top: 20px; margin-bottom: 20px;"; >About Us</h1>
 <div class="about-section">
-<p>Some text about who we are and what we do.</p>
-  <p>Resize the browser window to see that this page is responsive by the way.</p>
+<p>At  BUY AND SELL DISTED COLLEGE, we are passionate about bringing you the best deals on high-quality used systems.</p>
+  <br>We understand that technology moves at a rapid pace, and keeping up with the latest advancements can be expensive.</p>
+    <br> That's why we've created a platform where you can buy and sell used systems, making it easier and more affordable for everyone.</p>
 </div>
 
 
 <h1 style="text-align:center">Category</h1>
-<section class = "home-category">
-    <div class = "swiper category-slider">
-    <div class="swiper-wrapper">
+  <section class="home-category">
+    <div class="category-container">
+      <form method="post" action="index1.php" class="category-item">
+        <input type="hidden" name="category" value="">
+        <button type="submit" name="filter_button">
+          <img src="icon-12.png" alt="All Categories" class="category-image">
+          <h3 class="category-title">All Categories</h3>
+        </button>
+      </form>
 
-   
-        
-<form method="post" action="index1.php" class ="swiper-slide slide">
-    <input type="hidden" name="category" value="">
-    <button type="submit" name="filter_button" class="category-item">
-        <img src="icon-12.png" alt="All Categories" class="category-image">
-        <h3 class="category-title">All Categories</h3>
-    </button>
-</form>
+      <form method="post" action="index1.php" class="category-item">
+        <input type="hidden" name="category" value="stationery">
+        <button type="submit" name="filter_button">
+          <img src="icon-10.png" alt="Stationery" class="category-image">
+          <h3 class="category-title">Stationery</h3>
+        </button>
+      </form>
 
-<form method="post" action="index1.php" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="stationery">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-10.png" alt="Stationery" class="category-image">
-                    <h3 class="category-title">Stationery</h3>
-                </button>
-            </form>
+      <form method="post" action="index1.php" class="category-item">
+        <input type="hidden" name="category" value="electronics">
+        <button type="submit" name="filter_button">
+          <img src="icon-14.png" alt="Electronics" class="category-image">
+          <h3 class="category-title">Electronics</h3>
+        </button>
+      </form>
 
-            <form method="post" action="index1.php" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="electronics">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-14.png" alt="Electronics" class="category-image">
-                    <h3 class="category-title">Electronics</h3>
-                </button>
-            </form>
+      <form method="post" action="index1.php" class="category-item">
+        <input type="hidden" name="category" value="clothes">
+        <button type="submit" name="filter_button">
+          <img src="icon-9.png" alt="Clothes" class="category-image">
+          <h3 class="category-title">Clothes</h3>
+        </button>
+      </form>
 
-            <form method="post" action="index1.php" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="clothes">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-9.png" alt="Clothes" class="category-image">
-                    <h3 class="category-title">Clothes</h3>
-                </button>
-            </form>
+      <form method="post" action="index1.php" class="category-item">
+        <input type="hidden" name="category" value="shoes">
+        <button type="submit" name="filter_button">
+          <img src="icon-13.png" alt="Shoes" class="category-image">
+          <h3 class="category-title">Shoes</h3>
+        </button>
+      </form>
 
-            <form method="post" action="index1.php" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="shoes">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-13.png" alt="Shoes" class="category-image">
-                    <h3 class="category-title">Shoes</h3>
-                </button>
-            </form>
-
-            <form method="post" action="index1.php" class ="swiper-slide slide">
-                <input type="hidden" name="category" value="health&beauty">
-                <button type="submit" name="filter_button" class="category-item">
-                    <img src="icon-11.png" alt="Health&Beauty" class="category-image">
-                    <h3 class="category-title">H&B</h3>
-                </button>
-            </form>
-         
-</div>
-</div>
+      <form method="post" action="index1.php" class="category-item">
+        <input type="hidden" name="category" value="health&beauty">
+        <button type="submit" name="filter_button">
+          <img src="icon-11.png" alt="Health&Beauty" class="category-image">
+          <h3 class="category-title">Health & Beauty</h3>
+        </button>
+      </form>
     </div>
-</section>
+    <div style="margin-top: 50px;"></div>
+  </section>
 
 
 
  <!-- Product section -->
- <div class="container">
-        <h1 style="text-align:center">Latest Product</h1>
+ <h1 style="text-align: center;">Latest Products</h1>
+    <div class="container">
+        <div class="products">
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <div class="product">
                 <div class="card1">
@@ -490,24 +467,19 @@ footer {
             </div>
         <?php endwhile; ?>
         </div>
+        </div>
 
 
-
-
-<script>
-    
-</script>
-
-<footer>
+        <footer>
   <div class="footer-content">
-    <p>&copy; 2023 BUY AND SELL DISTED COLLEGE. All rights reserved.</p>
+    <p>&copy; 2023 BUY AND SELL DISTED COLLEGE. All rights reserved.</p><br>
     
     <div class="row">
       <div class="col-md-12 text-center">
-        <h4>Contact Information</h4>
-        <p>Email: info@example.com</p>
-        <p>Phone: +1 123-456-7890</p>
-        <p>Address: 123 Street, City, Country</p>
+        <h4>Contact Information</h4><br>
+        <p>Email: info@example.com</p><br>
+        <p>Phone: +1 123-456-7890</p><br>
+        <p>Address: 123 Street, City, Country</p><br>
         <div class="social-media">
           <h4>Follow Us</h4>
           <ul>
@@ -519,14 +491,14 @@ footer {
         </div>
       </div>
       <div class="footer-icons">
-      <a href="home1.php"><i class=""></i>Home</a>
-      <a href="cart1.php"><i class=""></i>Cart</a>
-      <a href="userprofile1.php"><i class=""></i>User Profile</a>
+        <a href="home1.php"><i class=""></i>Home</a>
+        <a href="cart1.php"><i class=""></i>Cart</a>
+        <a href="userprofile1.php"><i class=""></i>User Profile</a>
+      </div>
     </div>
-    </div>
-      
-
+  </div>
 </footer>
+
 
 
 
