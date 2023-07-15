@@ -52,9 +52,42 @@ function showCustomers(){
     });
 }
 
+function showSellers(){
+    $.ajax({
+        url:"./adminView/viewSellers.php",
+        method:"post",
+        data:{record:1},
+        success:function(data){
+            $('.allContent-section').html(data);
+        }
+    });
+}
+
+function showMessages(){
+    $.ajax({
+        url:"./adminView/viewMessages.php",
+        method:"post",
+        data:{record:1},
+        success:function(data){
+            $('.allContent-section').html(data);
+        }
+    });
+}
+
 function showOrders(){
     $.ajax({
         url:"./adminView/viewAllOrders.php",
+        method:"post",
+        data:{record:1},
+        success:function(data){
+            $('.allContent-section').html(data);
+        }
+    });
+}
+
+function showReserves(){
+    $.ajax({
+        url:"./adminView/viewReserve.php",
         method:"post",
         data:{record:1},
         success:function(data){
@@ -262,65 +295,9 @@ function variationEditForm(id){
 }
 
 
-//update variation after submit
-function updateVariations(){
-    var v_id = $('#v_id').val();
-    var product = $('#product').val();
-    var size = $('#size').val();
-    var qty = $('#qty').val();
-    var fd = new FormData();
-    fd.append('v_id', v_id);
-    fd.append('product', product);
-    fd.append('size', size);
-    fd.append('qty', qty);
-   
-    $.ajax({
-      url:'./controller/updateVariationController.php',
-      method:'post',
-      data:fd,
-      processData: false,
-      contentType: false,
-      success: function(data){
-        alert('Update Success.');
-        $('form').trigger('reset');
-        showProductSizes();
-      }
-    });
-}
-function search(id){
-    $.ajax({
-        url:"./controller/searchController.php",
-        method:"post",
-        data:{record:id},
-        success:function(data){
-            $('.eachCategoryProducts').html(data);
-        }
-    });
-}
 
 
-function quantityPlus(id){ 
-    $.ajax({
-        url:"./controller/addQuantityController.php",
-        method:"post",
-        data:{record:id},
-        success:function(data){
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
-function quantityMinus(id){
-    $.ajax({
-        url:"./controller/subQuantityController.php",
-        method:"post",
-        data:{record:id},
-        success:function(data){
-            $('form').trigger('reset');
-            showMyCart();
-        }
-    });
-}
+
 
 function checkout(){
     $.ajax({
@@ -334,25 +311,3 @@ function checkout(){
 }
 
 
-function removeFromWish(id){
-    $.ajax({
-        url:"./controller/removeFromWishlist.php",
-        method:"post",
-        data:{record:id},
-        success:function(data){
-            alert('Removed from wishlist');
-        }
-    });
-}
-
-
-function addToWish(id){
-    $.ajax({
-        url:"./controller/addToWishlist.php",
-        method:"post",
-        data:{record:id},
-        success:function(data){
-            alert('Added to wishlist');        
-        }
-    });
-}

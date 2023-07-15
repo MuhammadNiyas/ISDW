@@ -15,7 +15,20 @@
             include "./adminHeader.php";
             include "./sidebar.php";
            
-            include_once "./config/dbconnect.php";
+            
+    $server = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "online_store_db";
+
+    // Create a new mysqli connection
+    $conn = new mysqli($server, $username, $password, $dbname);
+
+    // Check the connection
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
+            
         ?>
 
     <div id="main-content" class="container allContent-section py-4">
@@ -23,10 +36,10 @@
             <div class="col-sm-3">
                 <div class="card">
                     <i class="fa fa-users  mb-2" style="font-size: 70px;"></i>
-                    <h4 style="color:white;">Total Users</h4>
+                    <h4 style="color:white;">Total Buyers</h4>
                     <h5 style="color:white;">
                     <?php
-                        $sql="SELECT * from users where isAdmin=0";
+                        $sql="SELECT * from buyers";
                         $result=$conn-> query($sql);
                         $count=0;
                         if ($result-> num_rows > 0){
@@ -41,12 +54,12 @@
             </div>
             <div class="col-sm-3">
                 <div class="card">
-                    <i class="fa fa-th-large mb-2" style="font-size: 70px;"></i>
-                    <h4 style="color:white;">Total Categories</h4>
+                    <i class="fa fa-user-secret mb-2" style="font-size: 70px;"></i>
+                    <h4 style="color:white;">Total Sellers</h4>
                     <h5 style="color:white;">
                     <?php
                        
-                       $sql="SELECT * from category";
+                       $sql="SELECT * from sellers";
                        $result=$conn-> query($sql);
                        $count=0;
                        if ($result-> num_rows > 0){
@@ -62,12 +75,12 @@
             </div>
             <div class="col-sm-3">
             <div class="card">
-                    <i class="fa fa-th mb-2" style="font-size: 70px;"></i>
+                    <i class="fa fa-dropbox mb-2" style="font-size: 70px;"></i>
                     <h4 style="color:white;">Total Products</h4>
                     <h5 style="color:white;">
                     <?php
                        
-                       $sql="SELECT * from product";
+                       $sql="SELECT * from products";
                        $result=$conn-> query($sql);
                        $count=0;
                        if ($result-> num_rows > 0){
@@ -83,12 +96,12 @@
             </div>
             <div class="col-sm-3">
                 <div class="card">
-                    <i class="fa fa-list mb-2" style="font-size: 70px;"></i>
+                    <i class="fa fa-shopping-cart mb-2" style="font-size: 70px;"></i>
                     <h4 style="color:white;">Total orders</h4>
                     <h5 style="color:white;">
                     <?php
                        
-                       $sql="SELECT * from orders";
+                       $sql="SELECT * from checkout";
                        $result=$conn-> query($sql);
                        $count=0;
                        if ($result-> num_rows > 0){

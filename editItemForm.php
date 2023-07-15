@@ -1,4 +1,3 @@
-
 <div class="container p-5">
 
 <h4>Edit Product Detail</h4>

@@ -3,56 +3,69 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>O.N.</th>
-        <th>Customer</th>
+        <th>I.D.</th>
+        <th>Buyer Name</th>
+        <th>Email</th>
         <th>Contact</th>
-        <th>OrderDate</th>
-        <th>Payment Method</th>
-        <th>Order Status</th>
+        <th>Address</th>
+        <th>Deliver Status</th>
         <th>Payment Status</th>
         <th>More Details</th>
      </tr>
     </thead>
-     <?php
-      include_once "../config/dbconnect.php";
-      $sql="SELECT * from orders";
-      $result=$conn-> query($sql);
-      
-      if ($result-> num_rows > 0){
-        while ($row=$result-> fetch_assoc()) {
-    ?>
+    <?php
+    $server = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "online_store_db";
+
+    // Create a new mysqli connection
+    $conn = new mysqli($server, $username, $password, $dbname);
+
+    // Check the connection
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT * FROM checkout";
+    $result = $conn->query($sql);
+    $count = 1;
+
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+        ?>
        <tr>
-          <td><?=$row["order_id"]?></td>
-          <td><?=$row["delivered_to"]?></td>
-          <td><?=$row["phone_no"]?></td>
-          <td><?=$row["order_date"]?></td>
-          <td><?=$row["pay_method"]?></td>
+          <td><?=$row["buyerID"]?></td>
+          <td><?=$row["buyerName"]?></td>
+          <td><?=$row["buyerEmail"]?></td>
+          <td><?=$row["buyerPhoneNumber"]?></td>
+          <td><?=$row["buyerAddress"]?></td>
            <?php 
                 if($row["order_status"]==0){
                             
             ?>
-                <td><button class="btn btn-danger" onclick="ChangeOrderStatus('<?=$row['order_id']?>')">Pending </button></td>
+                <td><button class="btn btn-danger" onclick="ChangeOrderStatus('<?=$row['checkoutID']?>')">Pending </button></td>
             <?php
                         
                 }else{
             ?>
-                <td><button class="btn btn-success" onclick="ChangeOrderStatus('<?=$row['order_id']?>')">Delivered</button></td>
+                <td><button class="btn btn-success" onclick="ChangeOrderStatus('<?=$row['checkoutID']?>')">Delivered</button></td>
         
             <?php
             }
                 if($row["pay_status"]==0){
             ?>
-                <td><button class="btn btn-danger"  onclick="ChangePay('<?=$row['order_id']?>')">Unpaid</button></td>
+                <td><button class="btn btn-danger"  onclick="ChangePay('<?=$row['checkoutID']?>')">Unpaid</button></td>
             <?php
                         
             }else if($row["pay_status"]==1){
             ?>
-                <td><button class="btn btn-success" onclick="ChangePay('<?=$row['order_id']?>')">Paid </button></td>
+                <td><button class="btn btn-success" onclick="ChangePay('<?=$row['checkoutID']?>')">Paid </button></td>
             <?php
                 }
             ?>
               
-        <td><a class="btn btn-primary openPopup" data-href="./adminView/viewEachOrder.php?orderID=<?=$row['order_id']?>" href="javascript:void(0);">View</a></td>
+        <td><a class="btn btn-primary openPopup" data-href="./adminView/viewEachOrder.php?orderID=<?=$row['checkoutID']?>" href="javascript:void(0);">View</a></td>
         </tr>
     <?php
             

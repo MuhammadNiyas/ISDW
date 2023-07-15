@@ -1,15 +1,15 @@
 <div>
-  <h2>All Buyers</h2>
+  <h2>All Feedback</h2>
   <table class="table">
     <thead>
       <tr>
-      <th class="text-center">S.N.</th>
+        <th class="text-center">S.N.</th>
         <th class="text-center">Name</th>
         <th class="text-center">I.D.</th>
-        <th class="text-center">Username</th>
         <th class="text-center">Email</th>
-        <th class="text-center">Phone</th>
-        <th class="text-center">Signup Date Time</th>
+        <th class="text-center">Contact Number</th>
+        <th class="text-center">Description</th>
+        <th class="text-center">Date Time</th>
         <th class="text-center" colspan="2">Action</th>
       </tr>
     </thead>
@@ -27,7 +27,7 @@
       die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT * FROM buyers";
+    $sql = "SELECT * FROM submissions";
     $result = $conn->query($sql);
     $count = 1;
 
@@ -36,13 +36,13 @@
         ?>
         <tr>
           <td><?=$count?></td>
-          <td><?=$row["buyerName"]?></td>
-          <td><?=$row["buyerID"]?></td>
-          <td><?=$row["buyerUsername"]?></td>
-          <td><?=$row["buyerEmail"]?></td>
-          <td><?=$row["buyerPhoneNumber"]?></td>
-          <td><?=$row["signupDateTime"]?></td>
-          <td><button class="btn btn-danger" style="height:40px" onclick="customerDelete('<?=$row['buyerID']?>')">Delete</button></td>
+          <td><?=$row["first_name"]?></td>
+          <td><?=$row["id"]?></td>
+          <td><?=$row["email"]?></td>
+          <td><?=$row["phone"]?></td>
+          <td><?=$row["message"]?></td>
+          <td><?=$row["created_at"]?></td>
+          <td><button class="btn btn-danger" style="height:40px" onclick="messagesDelete('<?=$row['id']?>')">Delete</button></td>
         </tr>
         <?php
         $count++;
@@ -54,17 +54,17 @@
 
 
 <script>
-function customerDelete(id) {
+function messagesDelete(id) {
   $.ajax({
-    url: "./controller/deleteCustomersController.php",
+    url: "./controller/deleteMessagesController.php",
     method: "post",
     data: { record: id },
     success: function(data) {
-      alert('Customer Successfully deleted');
-      showCustomers();
+      alert('Message Successfully deleted');
+      showMessages();
     },
     error: function() {
-      alert('Failed to delete customer');
+      alert('Failed to delete Message');
     }
   });
 }

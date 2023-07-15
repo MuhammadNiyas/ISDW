@@ -1,4 +1,3 @@
-
 <div >
   <h2>Product Sizes Item</h2>
   <table class="table ">
@@ -106,4 +105,3 @@
 
   
 </div>
-   

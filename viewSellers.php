@@ -1,9 +1,9 @@
 <div>
-  <h2>All Buyers</h2>
+  <h2>All Sellers</h2>
   <table class="table">
     <thead>
       <tr>
-      <th class="text-center">S.N.</th>
+        <th class="text-center">S.N.</th>
         <th class="text-center">Name</th>
         <th class="text-center">I.D.</th>
         <th class="text-center">Username</th>
@@ -27,7 +27,7 @@
       die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT * FROM buyers";
+    $sql = "SELECT * FROM sellers";
     $result = $conn->query($sql);
     $count = 1;
 
@@ -36,13 +36,13 @@
         ?>
         <tr>
           <td><?=$count?></td>
-          <td><?=$row["buyerName"]?></td>
-          <td><?=$row["buyerID"]?></td>
-          <td><?=$row["buyerUsername"]?></td>
-          <td><?=$row["buyerEmail"]?></td>
-          <td><?=$row["buyerPhoneNumber"]?></td>
+          <td><?=$row["sellerName"]?></td>
+          <td><?=$row["sellerID"]?></td>
+          <td><?=$row["sellerUsername"]?></td>
+          <td><?=$row["sellerEmail"]?></td>
+          <td><?=$row["sellerPhoneNumber"]?></td>
           <td><?=$row["signupDateTime"]?></td>
-          <td><button class="btn btn-danger" style="height:40px" onclick="customerDelete('<?=$row['buyerID']?>')">Delete</button></td>
+          <td><button class="btn btn-danger" style="height:40px" onclick="sellerDelete('<?=$row['sellerID']?>')">Delete</button></td>
         </tr>
         <?php
         $count++;
@@ -52,22 +52,23 @@
   </table>
 </div>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-function customerDelete(id) {
+function sellerDelete(id) {
   $.ajax({
-    url: "./controller/deleteCustomersController.php",
+    url: "./controller/deleteSellersController.php",
     method: "post",
     data: { record: id },
     success: function(data) {
-      alert('Customer Successfully deleted');
-      showCustomers();
+      alert('Seller Successfully deleted');
+      showSellers();
     },
     error: function() {
-      alert('Failed to delete customer');
+      alert('Failed to delete seller');
     }
   });
 }
 
 
 </script>
+   

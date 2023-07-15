@@ -1,10 +1,20 @@
 <?php
+    $server = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "online_store_db";
 
-    include_once "../config/dbconnect.php";
+    // Create a new mysqli connection
+    $conn = new mysqli($server, $username, $password, $dbname);
+
+    // Check the connection
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
    
-    $order_id=$_POST['record'];
+    $checkoutID=$_POST['record'];
     //echo $order_id;
-    $sql = "SELECT order_status from orders where order_id='$order_id'"; 
+    $sql = "SELECT order_status from checkout where checkoutID='$checkoutID'"; 
     $result=$conn-> query($sql);
   //  echo $result;
 
@@ -13,10 +23,10 @@
    // echo $row["pay_status"];
     
     if($row["order_status"]==0){
-         $update = mysqli_query($conn,"UPDATE orders SET order_status=1 where order_id='$order_id'");
+         $update = mysqli_query($conn,"UPDATE checkout SET order_status=1 where checkoutID='$checkoutID'");
     }
     else if($row["order_status"]==1){
-         $update = mysqli_query($conn,"UPDATE orders SET order_status=0 where order_id='$order_id'");
+         $update = mysqli_query($conn,"UPDATE checkout SET order_status=0 where checkoutID='$checkoutID'");
     }
     
         

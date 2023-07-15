@@ -13,13 +13,13 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
     
-    $p_id=$_POST['record'];
-    $query="DELETE FROM products where productID='$p_id'";
+    $id=$_POST['record'];
+    $query="DELETE FROM buyers where buyerID='$id'";
 
     $data=mysqli_query($conn,$query);
 
     if($data){
-        echo"Product Item Deleted";
+        echo"Customer Deleted";
     }
     else{
         echo"Not able to delete";
