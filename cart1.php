@@ -84,10 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_from_cart'])) {
     if (empty($_SESSION['cart'])) {
         // Delete buyer information if cart is empty
         unset($_SESSION['buyers']);
-
     }
-
-    
 }
 
 // Retrieve products from the cart
@@ -125,9 +122,9 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 
         $totalCost += $subtotal;
         $totalCost += 0; // Delivery charge is free, so add 0
-
     }
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $updatedBuyerInfo = array(
         'buyerName' => $_POST['buyerName'],
@@ -169,8 +166,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -180,9 +175,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<title>Cart</title>
-<style>
-body {
+    <title>Cart</title>
+    <style>
+     body {
     margin: 0;
     font-family:  sans-serif;
     
@@ -493,21 +488,16 @@ h1 {
   }
   
   button:hover {
-    background-color: #111;
+    background-color: #111;
   }
-  
-  
-
-
- 
     </style>
 </head>
 <body>
     <div class="topnav">
         <img src="logo2.png" alt="Logo" width="150px">
-        <a href="view_transaction.php"><i class="	fas fa-money-check-alt"></i></a>
-    <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> </a>
-        <a href="process_form.php"><i class="fas fa-paper-plane"></i> CONTACT US</a> 
+        <a href="view_transaction.php"><i class="fas fa-money-check-alt"></i></a>
+        <a href="logout1.php"><i class="fas fa-sign-out-alt"></i> </a>
+        <a href="process_form.php"><i class="fas fa-paper-plane"></i> CONTACT US</a>
         <a href="userprofile1.php"><i class="fas fa-user"></i> USER PROFILE</a>
         <a href="reserve.php" ><i class="far fa-calendar-alt"></i> RESERVE</a>
         <a href="cart1.php" class="active"><i class="fas fa-shopping-cart"></i> CART</a>
@@ -515,107 +505,103 @@ h1 {
     </div>
 
     <div class="cart-container">
-    <div class="shopping-cart">
-        <h2>My Cart</h2>
-        <hr>
-        <table>
-            <tr>
-                <th>Product</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Action</th>
-            </tr>
-            <?php foreach ($cartItems as $item) : ?>
+        <div class="shopping-cart">
+            <h2>My Cart</h2>
+            <hr>
+            <table>
                 <tr>
-                    <td><img src="<?php echo $item['productImage']; ?>" alt="Product Image" width="50px"></td>
-                    <td><?php echo $item['productName']; ?></td>
-                    <td>$<?php echo $item['productPrice']; ?></td>
-                    <td>
-                        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                            <input type="hidden" name="productID" value="<?php echo $item['productID']; ?>">
-                            <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" min="1">
-                            <button type="submit" name="update_quantity">Update</button>
-                        </form>
-                    </td>
-                    <td>$<?php echo $item['subtotal']; ?></td>
-                    <td>
-                        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                            <input type="hidden" name="productID" value="<?php echo $item['productID']; ?>">
-                            <button type="submit" name="remove_from_cart">Remove</button>
-                        </form>
-                    </td>
+                    <th>Product</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
                 </tr>
-            <?php endforeach; ?>
-        </table>
-    </div>
-
-
-    <div class="order-summary">
-    <h2>Order Summary</h2>
-    <div class="summary-box">
-        <table>
-            <tr>
-                <th>Product ID</th>
-                <th>Product</th>
-                <th>Price</th>
-            </tr>
-            <?php foreach ($cartItems as $item): ?>
-                <tr>
-                    <td><?php echo $item['productID']; ?></td>
-                    <td><strong><?php echo $item['productName']; ?></strong></td>
-                    <td>$<?php echo $item['productPrice']; ?></td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="total">Subtotal: $<?php echo $item['subtotal']; ?></td>
-                </tr>
-            <?php endforeach; ?>
-            <tr>
-                <td colspan="3" class="total">Delivery Charge: Free</td>
-            </tr>
-            <tr>
-                <td colspan="3" class="total">Total Cost: $<?php echo $totalCost; ?></td>
-            </tr>
-        </table>
-    </div>
-    <form method="post" action="checkout1.php">
-        <button type="submit" class="checkout-button" <?php echo empty($cartItems) ? 'disabled' : ''; ?>>Proceed to Checkout</button>
-    </form>
-</div>
-            </div>
-
-   
-    <footer>
-  <div class="footer-content">
-    <p>&copy; 2023 BUY AND SELL DISTED COLLEGE. All rights reserved.</p>
-    
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <h4>Contact Information</h4>
-        <p>Email: info@example.com</p>
-        <p>Phone: +1 123-456-7890</p>
-        <p>Address: 123 Street, City, Country</p>
-        <div class="social-media">
-          <h4>Follow Us</h4>
-          <ul>
-            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a></li>
-          </ul>
+                <?php foreach ($cartItems as $item) : ?>
+                    <tr>
+                        <td><img src="<?php echo $item['productImage']; ?>" alt="Product Image" width="50px"></td>
+                        <td><?php echo $item['productName']; ?></td>
+                        <td>RM<?php echo $item['productPrice']; ?></td>
+                        <td>
+                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                                <input type="hidden" name="productID" value="<?php echo $item['productID']; ?>">
+                                <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" min="1">
+                                <button type="submit" name="update_quantity">Update</button>
+                            </form>
+                        </td>
+                        <td>RM<?php echo $item['subtotal']; ?></td>
+                        <td>
+                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                                <input type="hidden" name="productID" value="<?php echo $item['productID']; ?>">
+                                <button type="submit" name="remove_from_cart">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
         </div>
-      </div>
-      <div class="footer-icons">
-      <a href="home1.php"><i class=""></i>Home</a>
-      <a href="cart1.php"><i class=""></i>Cart</a>
-      <a href="userprofile1.php"><i class=""></i>User Profile</a>
+
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-box">
+                <table>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                    </tr>
+                    <?php foreach ($cartItems as $item): ?>
+                        <tr>
+                            <td><?php echo $item['productID']; ?></td>
+                            <td><strong><?php echo $item['productName']; ?></strong></td>
+                            <td>RM<?php echo $item['productPrice']; ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="total">Subtotal: RM<?php echo $item['subtotal']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="3" class="total">Delivery Charge: Free</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="total">Total Cost: RM<?php echo $totalCost; ?></td>
+                    </tr>
+                </table>
+            </div>
+            <form method="post" action="checkout1.php">
+                <button type="submit" class="checkout-button" <?php echo empty($cartItems) ? 'disabled' : ''; ?>>Proceed to Checkout</button>
+            </form>
+        </div>
     </div>
-     
-      
 
-</footer>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2023 BUY AND SELL DISTED COLLEGE. All rights reserved.</p>
 
-    
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h4>Contact Information</h4>
+                    <p>Email: info@example.com</p>
+                    <p>Phone: +1 123-456-7890</p>
+                    <p>Address: 123 Street, City, Country</p>
+                    <div class="social-media">
+                        <h4>Follow Us</h4>
+                        <ul>
+                            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a></li>
+                            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-icons">
+                    <a href="home1.php"><i class=""></i>Home</a>
+                    <a href="cart1.php"><i class=""></i>Cart</a>
+                    <a href="userprofile1.php"><i class=""></i>User Profile</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
