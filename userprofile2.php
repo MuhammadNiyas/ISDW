@@ -217,37 +217,30 @@ mysqli_close($conn);
             max-width: 100%;
             max-height: 100%;
         }
-        /* Navigation Styles */
-nav {
-  background-color: #333;
-  color: #fff;
-}
-
+/* Navigation bar styling */
 nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-color: #000000;
+  text-align: right;
 }
 
 nav li {
   float: left;
 }
 
-nav a {
+nav li a {
   display: block;
-  color: #fff;
+  color: #ffffff;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
 }
 
-nav a:hover {
-  background-color: #111;
-}
-
-nav li:last-child {
-  float: right;
+nav li a:hover {
+  background-color: #6b5a5a;
 }
     </style>
 </head>

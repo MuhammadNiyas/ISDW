@@ -159,37 +159,30 @@ $productCategories = mysqli_fetch_all($productCategoriesResult, MYSQLI_ASSOC);
             margin-bottom: 20px;
         }
 
-        /* Navigation bar styling */
-        nav {
-  display: flex;
-  justify-content: space-between;
-  background-color: #000000;
-}
-
+/* Navigation bar styling */
 nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  align-items: center;
+  overflow: hidden;
+  background-color: #000000;
+  text-align: right;
 }
 
-nav ul li {
-  margin-left: 10px;
+nav li {
+  float: left;
 }
 
-nav ul li a {
-  color: #fff;
-  text-decoration: none;
+nav li a {
+  display: block;
+  color: #ffffff;
+  text-align: center;
   padding: 14px 16px;
+  text-decoration: none;
 }
 
-nav ul li a:hover {
+nav li a:hover {
   background-color: #6b5a5a;
-}
-
-nav .logout {
-  margin-right: 10px;
 }
 
 
@@ -304,7 +297,7 @@ nav .logout {
             <li><a href="product2.php">Products</a></li>
             <li><a href="userprofile2.php">Seller Profile</a></li>
             <li><a href="order_status2.php">Orders</a></li>
-            <li class="logout"><a href="logout2.php">Logout</a></li>
+            <li style="float:right"><a href="logout2.php">Logout</a></li>
         </ul>
     </nav>
 
