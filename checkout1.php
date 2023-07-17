@@ -98,11 +98,15 @@ if (isset($_POST['checkout'])) {
         mysqli_stmt_bind_param($stmt, "ssssssssss", $reserveID, $productID, $productName, $productPrice, $buyerID, $buyerDetails['buyerUsername'], $buyerDetails['buyerName'], $buyerDetails['buyerEmail'], $buyerDetails['buyerAddress'], $buyerDetails['buyerPhoneNumber']);
         $insertResult = mysqli_stmt_execute($stmt);
 
-        if (!$insertResult) {
-            die("Error inserting reserved items into checkout table: " . mysqli_error($conn));
-        }
+      // Check if any errors occurred during the insertion
+    if (!$insertResult) {
+        die("Error inserting items into checkout table: " . mysqli_error($conn));
     }
 
+    // Redirect to the Thank You page after successful insertion
+    header("Location: checkoutmessage1.php");
+    exit(); // Exit after redirection
+}
     // Insert the cart items into the checkout table
     foreach ($cartItems as $item) {
         $productID = $item['productID'];
@@ -115,10 +119,15 @@ if (isset($_POST['checkout'])) {
         mysqli_stmt_bind_param($stmt, "sssssssss", $productID, $productName, $productPrice, $buyerID, $buyerDetails['buyerUsername'], $buyerDetails['buyerName'], $buyerDetails['buyerEmail'], $buyerDetails['buyerAddress'], $buyerDetails['buyerPhoneNumber']);
         $insertResult = mysqli_stmt_execute($stmt);
 
-        if (!$insertResult) {
-            die("Error inserting cart items into checkout table: " . mysqli_error($conn));
-        }
+     // Check if any errors occurred during the insertion
+     if (!$insertResult) {
+        die("Error inserting items into checkout table: " . mysqli_error($conn));
     }
+
+    // Redirect to the Thank You page after successful insertion
+    header("Location: checkoutmessage1.php");
+    exit(); // Exit after redirection
+}
 }
 
 // Retrieve buyer details from the database
@@ -418,30 +427,30 @@ mysqli_close($conn);
                 <div class="col-50">
                     <h3>Payment</h3>
                     <form method="post" action="" onsubmit="return validatePaymentForm()">
-                        <div class="row">
+                    <div class="row">
                             <div class="col-50">
                                 <label for="cname">Name on Card</label>
-                                <input type="text" id="cname" name="cardname" placeholder="Enter name on card">
+                                <input type="text" id="cname" name="cardname" placeholder="Enter name on card" pattern="[A-Za-z ]+" required>
                             </div>
                             <div class="col-50">
                                 <label for="ccnum">Credit card number</label>
-                                <input type="text" id="ccnum" name="cardnumber" placeholder="Enter your credit card number">
+                                <input type="text" id="ccnum" name="cardnumber" placeholder="Enter your credit card number" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-50">
                                 <label for="expmonth">Exp Month</label>
-                                <input type="text" id="expmonth" name="expmonth" placeholder="Month">
+                                <input type="text" id="expmonth" name="expmonth" placeholder="Month (MM)" pattern="[0-9]{2}" required>
                             </div>
                             <div class="col-50">
                                 <label for="expyear">Exp Year</label>
-                                <input type="text" id="expyear" name="expyear" placeholder="Year">
+                                <input type="text" id="expyear" name="expyear" placeholder="Year (YYYY)" pattern="[0-9]{4}" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-50">
                                 <label for="cvv">CVV</label>
-                                <input type="text" id="cvv" name="cvv" placeholder="CVV">
+                                <input type="text" id="cvv" name="cvv" placeholder="CVV" pattern="[0-9]{3}" required>
                             </div>
                         </div>
                         <div class="row">
@@ -456,7 +465,7 @@ mysqli_close($conn);
     </div>
 
     <script>
-        function validatePaymentForm() {
+       function validatePaymentForm() {
             var cardname = document.getElementById("cname").value;
             var cardnumber = document.getElementById("ccnum").value;
             var expmonth = document.getElementById("expmonth").value;
